@@ -1,7 +1,8 @@
 /* ============================================================
    Mold Docs — AI Proxy
-   A tiny server that turns a technician's field note into
-   structured job-timeline entries via the Anthropic API.
+   A tiny server the Mold Docs app calls for AI features:
+     POST /        -> turn a field note into timeline entries
+     POST /scan    -> read the total off a receipt photo
 
    The API key lives ONLY here, as an environment variable on
    the server — never in the app, never in the browser, never
@@ -18,7 +19,7 @@ const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://mold-docs-app.onrender.com';
 const PORT = process.env.PORT || 10000;
 
-const SYSTEM_PROMPT = [
+const TIMELINE_PROMPT = [
   "You convert a mold-remediation technician's spoken or typed field note",
   'into structured job-timeline entries.',
   'Return ONLY a JSON array — no prose, no markdown code fences.',
@@ -33,6 +34,16 @@ const SYSTEM_PROMPT = [
   '- Fix grammar; keep every field brief and professional.'
 ].join('\n');
 
+const RECEIPT_PROMPT = [
+  'You read a photo of a store receipt for a mold-remediation business.',
+  'Return ONLY a JSON object — no prose, no markdown code fences.',
+  'Shape: {"total": number, "store": string, "date": string}.',
+  '- "total": the final amount actually paid, as a plain number (no $ sign, no commas).',
+  '  Use the grand total / amount due, not a subtotal. 0 if it is not legible.',
+  '- "store": the store name (e.g. "The Home Depot"). "" if not legible.',
+  '- "date": the purchase date shown on the receipt (e.g. "May 24, 2026"). "" if not legible.'
+].join('\n');
+
 function setCors(res) {
   res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -44,21 +55,44 @@ function sendJson(res, code, obj) {
   res.end(JSON.stringify(obj));
 }
 
-// Pull the JSON array out of the model's reply, tolerating stray text/fences.
-function extractEntries(text) {
-  if (!text) return [];
-  const start = text.indexOf('[');
-  const end = text.lastIndexOf(']');
-  if (start === -1 || end === -1 || end < start) return [];
+function readBody(req, limit) {
+  return new Promise((resolve) => {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+      if (body.length > limit) req.destroy();
+    });
+    req.on('end', () => resolve(body));
+    req.on('error', () => resolve(''));
+  });
+}
+
+// Pull a JSON value out of the model's reply, tolerating stray text/fences.
+function extractJson(text, open, close) {
+  if (!text) return null;
+  const s = text.indexOf(open);
+  const e = text.lastIndexOf(close);
+  if (s === -1 || e === -1 || e < s) return null;
   try {
-    const arr = JSON.parse(text.slice(start, end + 1));
-    return Array.isArray(arr) ? arr : [];
-  } catch (e) {
-    return [];
+    return JSON.parse(text.slice(s, e + 1));
+  } catch (x) {
+    return null;
   }
 }
 
-const server = http.createServer((req, res) => {
+function callAnthropic(payload) {
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': API_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify(payload)
+  }).then((r) => r.json().then((data) => ({ ok: r.ok, data })));
+}
+
+const server = http.createServer(async (req, res) => {
   setCors(res);
 
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
@@ -68,49 +102,65 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (req.method !== 'POST') { res.writeHead(405); res.end(); return; }
+  if (!API_KEY) { sendJson(res, 500, { error: 'Server is missing ANTHROPIC_API_KEY.' }); return; }
 
-  let body = '';
-  req.on('data', (chunk) => {
-    body += chunk;
-    if (body.length > 20000) req.destroy();
-  });
-  req.on('end', async () => {
-    if (!API_KEY) {
-      sendJson(res, 500, { error: 'Server is missing ANTHROPIC_API_KEY.' });
+  const path = (req.url || '/').split('?')[0];
+
+  try {
+    /* ---- POST /scan : read a receipt photo ---- */
+    if (path === '/scan') {
+      const body = await readBody(req, 9000000); // ~9 MB ceiling for images
+      let imageBase64 = '';
+      let mediaType = 'image/jpeg';
+      try {
+        const p = JSON.parse(body || '{}');
+        imageBase64 = String(p.imageBase64 || '');
+        if (p.mediaType) mediaType = String(p.mediaType);
+      } catch (e) {}
+      if (!imageBase64) { sendJson(res, 400, { error: 'No image provided.' }); return; }
+
+      const { ok, data } = await callAnthropic({
+        model: MODEL,
+        max_tokens: 300,
+        system: RECEIPT_PROMPT,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: imageBase64 } },
+            { type: 'text', text: 'Read this receipt and return the JSON.' }
+          ]
+        }]
+      });
+      if (!ok) { sendJson(res, 502, { error: 'AI request failed.', detail: data }); return; }
+      const out = (data.content && data.content[0] && data.content[0].text) || '';
+      const parsed = extractJson(out, '{', '}') || {};
+      sendJson(res, 200, {
+        total: Number(parsed.total) || 0,
+        store: String(parsed.store || ''),
+        date: String(parsed.date || '')
+      });
       return;
     }
+
+    /* ---- POST / : turn a field note into timeline entries ---- */
+    const body = await readBody(req, 20000);
     let text = '';
     try { text = String((JSON.parse(body || '{}').text) || '').slice(0, 4000); } catch (e) {}
-    if (!text.trim()) {
-      sendJson(res, 400, { error: 'No text provided.' });
-      return;
-    }
-    try {
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': API_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: MODEL,
-          max_tokens: 1024,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: 'user', content: text }]
-        })
-      });
-      const data = await r.json();
-      if (!r.ok) {
-        sendJson(res, 502, { error: 'AI request failed.', detail: data });
-        return;
-      }
-      const out = (data.content && data.content[0] && data.content[0].text) || '';
-      sendJson(res, 200, { entries: extractEntries(out) });
-    } catch (e) {
-      sendJson(res, 502, { error: 'Proxy error.', detail: String(e) });
-    }
-  });
+    if (!text.trim()) { sendJson(res, 400, { error: 'No text provided.' }); return; }
+
+    const { ok, data } = await callAnthropic({
+      model: MODEL,
+      max_tokens: 1024,
+      system: TIMELINE_PROMPT,
+      messages: [{ role: 'user', content: text }]
+    });
+    if (!ok) { sendJson(res, 502, { error: 'AI request failed.', detail: data }); return; }
+    const out = (data.content && data.content[0] && data.content[0].text) || '';
+    const arr = extractJson(out, '[', ']');
+    sendJson(res, 200, { entries: Array.isArray(arr) ? arr : [] });
+  } catch (e) {
+    sendJson(res, 502, { error: 'Proxy error.', detail: String(e) });
+  }
 });
 
 server.listen(PORT, () => {
