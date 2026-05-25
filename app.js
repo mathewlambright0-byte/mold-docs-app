@@ -1255,7 +1255,7 @@
       const seg = openSegment();
       const allocations = [{ projectId: seg ? seg.projectId : '', amount: 0 }];
       MoldDocsStore.addPhoto({ kind: 'receipt', blob: file, ts: Date.now(), gps: gps, total: 0, allocations: allocations })
-        .then(() => { renderReceipts(); toast('✓ Receipt saved'); });
+        .then((saved) => { renderReceipts(); toast('✓ Receipt saved — reading total…'); scanReceipt(saved.id, true); });
     });
   }
 
@@ -1546,4 +1546,75 @@
         + '<div class="sub">📍 ' + escapeHtml(p.address || 'No address') + '</div>'
         + '</div>';
     }).join('');
+  }
+
+  /* ============================================================
+     AI RECEIPT SCANNING — read the total off a receipt photo.
+     Downscales the image on-device, sends it to the proxy's
+     /scan endpoint, and fills in the receipt total.
+     ============================================================ */
+
+  function downscaleImage(blob, maxDim, cb) {
+    const img = new Image();
+    const url = URL.createObjectURL(blob);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let w = img.naturalWidth || img.width;
+      let h = img.naturalHeight || img.height;
+      if (Math.max(w, h) > maxDim) {
+        const scale = maxDim / Math.max(w, h);
+        w = Math.round(w * scale);
+        h = Math.round(h * scale);
+      }
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      try {
+        cb(c.toDataURL('image/jpeg', 0.85).split(',')[1]);
+      } catch (e) {
+        cb(null);
+      }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); cb(null); };
+    img.src = url;
+  }
+
+  function scanReceipt(id, showToast) {
+    receipts((list) => {
+      const r = list.find((x) => x.id === id);
+      if (!r || !r.blob) return;
+      downscaleImage(r.blob, 1300, (b64) => {
+        if (!b64) {
+          if (showToast) toast('Couldn’t read the photo — enter the total manually');
+          return;
+        }
+        fetch('https://mold-docs-ai-proxy.onrender.com/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: b64, mediaType: 'image/jpeg' })
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            const total = (data && Number(data.total)) ? Number(data.total) : 0;
+            if (total > 0) {
+              receipts((l2) => {
+                const r2 = l2.find((x) => x.id === id);
+                if (!r2) return;
+                r2.total = total;
+                if (r2.allocations && r2.allocations.length === 1) r2.allocations[0].amount = total;
+                MoldDocsStore.addPhoto(r2).then(() => {
+                  renderReceipts();
+                  if (showToast) toast('✓ Total read: $' + total.toFixed(2));
+                });
+              });
+            } else if (showToast) {
+              toast('Couldn’t read a total — enter it manually');
+            }
+          })
+          .catch(() => {
+            if (showToast) toast('Scan unavailable — enter the total manually');
+          });
+      });
+    });
   }
