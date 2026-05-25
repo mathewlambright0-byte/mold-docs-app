@@ -29,25 +29,43 @@
 
   /* ---------------- AI Assist: parse natural language into timeline entries ---------------- */
 
-  // Mock dictation — toggles a "listening" state and drops a sample phrase in.
+  // Real voice dictation via the browser's Speech Recognition API.
   let micOn = false;
+  let recognition = null;
   function toggleMic() {
     const mic = document.getElementById('aiMic');
     const input = document.getElementById('aiInput');
-    micOn = !micOn;
-    mic.classList.toggle('listening', micOn);
-    if (micOn) {
-      input.placeholder = "Listening…  (this is a mockup — real app uses device dictation)";
-      setTimeout(() => {
-        if (!micOn) return;
-        input.value = "Today we did drywall in the master bath, and tomorrow we need to mud and tape.";
-        micOn = false;
-        mic.classList.remove('listening');
-        input.placeholder = "e.g. Today we did drywall, and tomorrow we need to mud and tape.";
-      }, 2200);
-    } else {
-      input.placeholder = "e.g. Today we did drywall, and tomorrow we need to mud and tape.";
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const restPlaceholder = 'e.g. Today we did drywall, and tomorrow we need to mud and tape.';
+    if (!SR) {
+      toast('Voice input isn’t supported on this browser — please type instead');
+      return;
     }
+    if (micOn) { if (recognition) recognition.stop(); return; }
+    recognition = new SR();
+    recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    const base = input.value.trim() ? input.value.trim() + ' ' : '';
+    recognition.onresult = (e) => {
+      let said = '';
+      for (let i = 0; i < e.results.length; i++) said += e.results[i][0].transcript;
+      input.value = base + said;
+    };
+    recognition.onerror = () => {
+      micOn = false;
+      mic.classList.remove('listening');
+      input.placeholder = restPlaceholder;
+    };
+    recognition.onend = () => {
+      micOn = false;
+      mic.classList.remove('listening');
+      input.placeholder = restPlaceholder;
+    };
+    recognition.start();
+    micOn = true;
+    mic.classList.add('listening');
+    input.placeholder = 'Listening… tap the mic again to stop.';
   }
 
   function useSuggestion(text) {
@@ -458,6 +476,8 @@
     if (o) o.remove();
   }
 
+  // Sends the note to the AI proxy; falls back to the on-device keyword
+  // parser if the proxy is unreachable (offline, asleep, or erroring).
   function aiParse() {
     const btn = document.getElementById('aiGo');
     const input = document.getElementById('aiInput');
@@ -466,16 +486,41 @@
       input.focus();
       return;
     }
+    const AI_PROXY_URL = 'https://mold-docs-ai-proxy.onrender.com';
+    const doneBtn = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Generate timeline entries';
+
     btn.classList.add('thinking');
     btn.innerHTML = '<svg id="aiGoIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Thinking…';
     btn.disabled = true;
-    setTimeout(() => {
-      const entries = parseUpdateText(raw);
+
+    const finish = (entries) => {
       renderPreview(entries, raw);
       btn.classList.remove('thinking');
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Generate timeline entries';
+      btn.innerHTML = doneBtn;
       btn.disabled = false;
-    }, 650);
+    };
+
+    fetch(AI_PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: raw })
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        const entries = (data && data.entries ? data.entries : [])
+          .map((e) => ({
+            when: e.when || 'Today',
+            status: e.status || 'done',
+            label: e.what || e.label || '',
+            phase: e.phase || 'Note',
+            source: e.notes || ''
+          }))
+          .filter((e) => e.label);
+        finish(entries.length ? entries : parseUpdateText(raw));
+      })
+      .catch(() => {
+        finish(parseUpdateText(raw));
+      });
   }
 
   /* ============================================================
