@@ -45,9 +45,124 @@
           </div>
 
           <div class="actions">
-            <button class="btn btn-primary" onclick="goto('dashboard')">Sign in</button>
-            <button class="btn btn-secondary" onclick="goto('dashboard')">Continue as Technician</button>
+            <button class="btn btn-primary" onclick="enterAs('admin')">Sign in (Admin)</button>
+            <button class="btn btn-secondary" onclick="enterAs('technician')">Continue as Technician</button>
           </div>
+        </div>
+      </div>
+
+      <!-- ===================== SETTINGS & ACCESS ===================== -->
+      <div class="screen" data-screen="admin">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="right">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor"><rect x="0" y="6" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="6" rx="0.5"/><rect x="8" y="2" width="3" height="8" rx="0.5"/><rect x="12" y="0" width="3" height="10" rx="0.5"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+          </div>
+        </div>
+        <div class="topbar">
+          <div class="icon-btn" onclick="goto('dashboard')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+          <div class="greeting" style="flex:1;">
+            <div class="hello">Mold Docs</div>
+            <div class="name">Settings &amp; Access</div>
+          </div>
+          <div style="width:40px;"></div>
+        </div>
+        <div class="screen-body">
+          <div class="section-h"><div class="title">Your Role</div></div>
+          <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;">Signed in as</div>
+              <div id="adminRoleLabel" style="font-size:16px;font-weight:800;margin-top:2px;">Technician</div>
+            </div>
+            <button class="btn-mini" onclick="switchRole()">Switch role</button>
+          </div>
+
+          <button class="btn btn-outline" data-feature="timesheet" onclick="goto('timesheet')" style="margin-bottom:10px;">View Timesheet</button>
+          <button class="btn btn-outline" data-feature="receipts" onclick="goto('receipts')" style="margin-bottom:14px;">Receipts</button>
+
+          <div id="techNote" style="display:none;background:var(--brand-light);border-radius:12px;padding:14px;font-size:13px;color:var(--text-2);line-height:1.5;">
+            More tools will appear here as they're rolled out to the crew.
+          </div>
+
+          <div id="adminOnlyBox" style="display:none;">
+            <div class="section-h"><div class="title">Labor Rate</div></div>
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;">
+              <div style="font-size:12px;color:var(--text-2);margin-bottom:8px;">Used to cost out labor hours in Job Cost.</div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span style="font-size:15px;font-weight:700;">$</span>
+                <input type="number" id="laborRateInput" inputmode="decimal" style="flex:1;min-width:0;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;" />
+                <span style="font-size:12px;color:var(--text-3);white-space:nowrap;">/ hr</span>
+                <button class="btn-mini primary" onclick="saveLaborRate()">Save</button>
+              </div>
+            </div>
+
+            <div class="section-h"><div class="title">Feature Access</div></div>
+            <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;line-height:1.5;">
+              Choose who sees each feature. New features start <b>Admin only</b> — flip one to <b>Everyone</b> to roll it out to the crew.
+            </div>
+            <div id="featureAccessList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== RECEIPTS ===================== -->
+      <div class="screen" data-screen="receipts">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="right">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor"><rect x="0" y="6" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="6" rx="0.5"/><rect x="8" y="2" width="3" height="8" rx="0.5"/><rect x="12" y="0" width="3" height="10" rx="0.5"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+          </div>
+        </div>
+        <div class="topbar">
+          <div class="icon-btn" onclick="goto('dashboard')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+          <div class="greeting" style="flex:1;">
+            <div class="hello">Materials</div>
+            <div class="name">Receipts</div>
+          </div>
+          <div style="width:40px;"></div>
+        </div>
+        <div class="screen-body">
+          <button class="btn btn-solid" onclick="receiptCapture()" style="margin-bottom:6px;">+ Add Receipt</button>
+          <div style="font-size:11px;color:var(--text-3);text-align:center;margin-bottom:14px;line-height:1.5;">Snap the receipt — date &amp; location are stamped automatically. Set the total and assign it to a job.</div>
+          <div id="receiptList"></div>
+        </div>
+        <input type="file" id="receiptFile" accept="image/*" capture="environment" style="display:none" onchange="onReceiptFile(event)" />
+      </div>
+
+      <!-- ===================== TIMESHEET ===================== -->
+      <div class="screen" data-screen="timesheet">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="right">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor"><rect x="0" y="6" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="6" rx="0.5"/><rect x="8" y="2" width="3" height="8" rx="0.5"/><rect x="12" y="0" width="3" height="10" rx="0.5"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+          </div>
+        </div>
+        <div class="topbar">
+          <div class="icon-btn" onclick="goto('dashboard')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+          <div class="greeting" style="flex:1;">
+            <div class="hello">Hours</div>
+            <div class="name">Timesheet</div>
+          </div>
+          <div style="width:40px;"></div>
+        </div>
+        <div class="screen-body">
+          <div style="background:linear-gradient(135deg,#0891B2,#155E75);color:#fff;border-radius:16px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;opacity:.85;font-weight:700;">This Week</div>
+            <div id="tsWeekTotal" style="font-size:30px;font-weight:800;margin-top:4px;">0h 0m</div>
+          </div>
+          <div class="section-h"><div class="title">By Day</div></div>
+          <div id="tsDayList"></div>
+          <div class="section-h" style="margin-top:16px;"><div class="title">By Job</div></div>
+          <div id="tsJobList"></div>
         </div>
       </div>
 
@@ -78,6 +193,7 @@
         </div>
 
         <div class="screen-body">
+          <div id="dayStatusCard" data-feature="checkin" style="margin-bottom:14px;"></div>
           <div class="kpi-grid">
             <div class="kpi">
               <div class="icon-wrap">
@@ -162,7 +278,7 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
             Map
           </div>
-          <div class="tab" data-tab="more">
+          <div class="tab" data-tab="more" onclick="goto('admin')">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             More
           </div>
@@ -204,6 +320,7 @@
         <div class="screen-body">
           <!-- Overview -->
           <div data-ptab="overview">
+            <div id="jobCheckinBox" data-feature="checkin" style="margin-bottom:14px;"></div>
             <div class="row-actions">
               <button class="btn-mini primary" onclick="goto('camera')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -253,6 +370,9 @@
                 <span style="font-size:13px;font-weight:600;color:var(--accent);">Fri, May 15</span>
               </div>
             </div>
+
+            <div class="section-h" data-feature="jobcost"><div class="title">Job Cost</div></div>
+            <div id="jobCostBox" data-feature="jobcost" style="margin-bottom:14px;"></div>
 
             <div class="section-h">
               <div class="title">Recent Photos</div>

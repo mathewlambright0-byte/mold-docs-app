@@ -71,3 +71,102 @@ body {
   margin: 14px 0 8px;
 }
 .photo-day:first-child { margin-top: 0; }
+
+/* Feature-access rows (Settings & Access screen) */
+.fa-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.fa-name { font-size: 13px; font-weight: 700; }
+.fa-toggle { display: flex; gap: 4px; flex-shrink: 0; }
+.fa-opt {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #f1f5f9;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.fa-opt.on {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+/* Timesheet rows */
+.ts-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.ts-date { font-size: 13px; font-weight: 700; }
+.ts-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.ts-hrs { font-size: 14px; font-weight: 800; color: var(--brand); flex-shrink: 0; }
+
+/* Receipt rows */
+.rc-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+.rc-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  background: #1E293B center/cover no-repeat;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.rc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.rc-date { font-size: 11px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.rc-line { display: flex; align-items: center; gap: 4px; }
+.rc-line span { font-size: 14px; font-weight: 700; }
+.rc-line input {
+  width: 90px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 700;
+}
+.rc-body select {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff;
+  max-width: 100%;
+}
+.rc-del {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-3);
+  font-size: 13px;
+  cursor: pointer;
+}

@@ -11,7 +11,10 @@
     else stopCamera();
     // refresh data-driven screens as we land on them
     if (name === 'project') renderProjectDetail();
-    if (name === 'dashboard') renderDashboard();
+    if (name === 'dashboard') { renderDashboard(); renderDayStatus(); }
+    if (name === 'admin') renderAdminScreen();
+    if (name === 'timesheet') renderTimesheet();
+    if (name === 'receipts') renderReceipts();
   }
   document.querySelectorAll('.legend button').forEach(b => {
     b.addEventListener('click', () => goto(b.dataset.go));
@@ -637,7 +640,7 @@
       // show photos for the current project (older photos without a
       // project tag are shown everywhere so nothing gets lost)
       const pid = MoldDocsStore.getCurrentProjectId();
-      const photos = allPhotos.filter(p => !p.projectId || p.projectId === pid);
+      const photos = allPhotos.filter(p => p.kind !== 'receipt' && (!p.projectId || p.projectId === pid));
       // release object URLs from the previous render
       (renderPhotos._urls || []).forEach(u => URL.revokeObjectURL(u));
       renderPhotos._urls = [];
@@ -834,6 +837,8 @@
     }
     renderTimeline();
     renderPhotos();
+    renderJobCheckin();
+    renderJobCost();
   }
 
   function tlItemHtml(e) {
@@ -922,5 +927,482 @@
     restoreMaterials();
     renderDashboard();
     renderPhotos();
+    renderDayStatus();
+    applyRoleVisibility();
   }
   initApp();
+
+  /* ============================================================
+     ROLES & FEATURE ACCESS — client-side gating for a staged
+     rollout. Not hard security; real enforcement comes with a
+     backend login later.
+     ============================================================ */
+
+  const FEATURE_LABELS = {
+    checkin: 'Job Check-In',
+    timesheet: 'Timesheet',
+    receipts: 'Receipts',
+    jobcost: 'Job Cost (COGs)'
+  };
+
+  function enterAs(role) {
+    MoldDocsStore.setRole(role);
+    applyRoleVisibility();
+    goto('dashboard');
+  }
+
+  function canSee(feature) {
+    if (MoldDocsStore.getRole() === 'admin') return true;
+    return MoldDocsStore.getFeatureAccess()[feature] === 'everyone';
+  }
+
+  // Show/hide anything tagged data-feature="X" or data-admin-only by role.
+  function applyRoleVisibility() {
+    if (typeof MoldDocsStore === 'undefined') return;
+    document.querySelectorAll('[data-feature]').forEach(el => {
+      el.style.display = canSee(el.dataset.feature) ? '' : 'none';
+    });
+    const isAdmin = MoldDocsStore.getRole() === 'admin';
+    document.querySelectorAll('[data-admin-only]').forEach(el => {
+      el.style.display = isAdmin ? '' : 'none';
+    });
+  }
+
+  function renderAdminScreen() {
+    if (typeof MoldDocsStore === 'undefined') return;
+    const isAdmin = MoldDocsStore.getRole() === 'admin';
+    $set('adminRoleLabel', isAdmin ? 'Admin' : 'Technician');
+    const adminBox = document.getElementById('adminOnlyBox');
+    if (adminBox) adminBox.style.display = isAdmin ? 'block' : 'none';
+    const techNote = document.getElementById('techNote');
+    if (techNote) techNote.style.display = isAdmin ? 'none' : 'block';
+    if (!isAdmin) return;
+
+    const rateInput = document.getElementById('laborRateInput');
+    if (rateInput) rateInput.value = MoldDocsStore.getLaborRate();
+
+    const list = document.getElementById('featureAccessList');
+    if (!list) return;
+    const access = MoldDocsStore.getFeatureAccess();
+    list.innerHTML = Object.keys(FEATURE_LABELS).map(f => {
+      const lvl = access[f] || 'admin';
+      return '<div class="fa-row">'
+        + '<div class="fa-name">' + escapeHtml(FEATURE_LABELS[f]) + '</div>'
+        + '<div class="fa-toggle">'
+        +   '<button class="fa-opt ' + (lvl === 'admin' ? 'on' : '') + '" onclick="setFeature(\'' + f + '\',\'admin\')">Admin only</button>'
+        +   '<button class="fa-opt ' + (lvl === 'everyone' ? 'on' : '') + '" onclick="setFeature(\'' + f + '\',\'everyone\')">Everyone</button>'
+        + '</div></div>';
+    }).join('');
+  }
+
+  function setFeature(feature, level) {
+    MoldDocsStore.setFeatureLevel(feature, level);
+    renderAdminScreen();
+    applyRoleVisibility();
+    toast(FEATURE_LABELS[feature] + ' → ' + (level === 'everyone' ? 'Everyone' : 'Admin only'));
+  }
+
+  function saveLaborRate() {
+    const input = document.getElementById('laborRateInput');
+    if (input) {
+      MoldDocsStore.setLaborRate(input.value);
+      toast('Labor rate saved');
+    }
+  }
+
+  function switchRole() {
+    goto('splash');
+  }
+
+  /* ============================================================
+     CHECK-IN & TIMESHEET — daily shift + per-job time, GPS-stamped.
+     Location is captured silently; the tech never touches it.
+     ============================================================ */
+
+  function getLocation(cb) {
+    if (!navigator.geolocation) { cb(null); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => cb({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => cb(null),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  }
+
+  function fmtDur(ms) {
+    if (!ms || ms < 0) ms = 0;
+    const mins = Math.round(ms / 60000);
+    return Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm';
+  }
+  function fmtClock(ts) {
+    return new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  }
+
+  /* ---- daily shift ---- */
+  function shifts() { return MoldDocsStore.kvGet('shifts', []); }
+  function saveShifts(a) { MoldDocsStore.kvSet('shifts', a); }
+  function openShift() { return shifts().find((s) => !s.outTs) || null; }
+
+  function startDay() {
+    if (openShift()) return;
+    toast('Getting location…');
+    getLocation((gps) => {
+      const a = shifts();
+      a.push({ id: 'sh_' + Date.now(), inTs: Date.now(), inGps: gps, outTs: null, outGps: null });
+      saveShifts(a);
+      renderDayStatus();
+      toast('✓ Checked in for the day');
+    });
+  }
+
+  function endDay() {
+    const s = openShift();
+    if (!s) return;
+    if (openSegment()) jobCheckOut(true);   // close any open job too
+    getLocation((gps) => {
+      const a = shifts();
+      const rec = a.find((x) => x.id === s.id);
+      if (rec) { rec.outTs = Date.now(); rec.outGps = gps; }
+      saveShifts(a);
+      renderDayStatus();
+      toast('✓ Day ended');
+    });
+  }
+
+  /* ---- per-job time segments ---- */
+  function segments() { return MoldDocsStore.kvGet('jobsegments', []); }
+  function saveSegments(a) { MoldDocsStore.kvSet('jobsegments', a); }
+  function openSegment() { return segments().find((s) => !s.outTs) || null; }
+
+  function jobCheckIn() {
+    const pid = MoldDocsStore.getCurrentProjectId();
+    if (!pid) { toast('Open a job first'); return; }
+    if (openSegment()) { toast('Check out of your current job first'); return; }
+    toast('Getting location…');
+    getLocation((gps) => {
+      const a = segments();
+      a.push({ id: 'seg_' + Date.now(), projectId: pid, inTs: Date.now(), inGps: gps, outTs: null });
+      saveSegments(a);
+      renderJobCheckin();
+      toast('✓ Checked in to job');
+    });
+  }
+
+  function jobCheckOut(silent) {
+    const s = openSegment();
+    if (!s) { if (!silent) toast('Not checked into a job'); return; }
+    getLocation((gps) => {
+      const a = segments();
+      const rec = a.find((x) => x.id === s.id);
+      if (rec) { rec.outTs = Date.now(); rec.outGps = gps; }
+      saveSegments(a);
+      renderJobCheckin();
+      if (!silent) toast('✓ Checked out of job');
+    });
+  }
+
+  /* ---- render: dashboard day-status card ---- */
+  function renderDayStatus() {
+    const box = document.getElementById('dayStatusCard');
+    if (!box) return;
+    const s = openShift();
+    if (s) {
+      box.innerHTML = '<div style="background:#065F46;color:#fff;border-radius:14px;padding:14px;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">'
+        +   '<div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;opacity:.85;font-weight:700;">On the clock</div>'
+        +   '<div style="font-size:15px;font-weight:800;margin-top:2px;">Since ' + fmtClock(s.inTs) + '</div></div>'
+        +   '<button onclick="endDay()" style="background:#fff;color:#065F46;border:none;border-radius:10px;padding:10px 14px;font-weight:800;font-size:13px;cursor:pointer;flex-shrink:0;">End Day</button>'
+        + '</div>'
+        + '<div style="margin-top:8px;"><span onclick="goto(\'timesheet\')" data-feature="timesheet" style="color:#A7F3D0;font-weight:700;font-size:12px;cursor:pointer;">View timesheet →</span></div>'
+        + '</div>';
+    } else {
+      box.innerHTML = '<div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">'
+        + '<div><div style="font-size:13px;font-weight:800;">Not checked in</div>'
+        +   '<div style="font-size:11px;color:var(--text-3);margin-top:1px;">Start your day to track hours</div></div>'
+        + '<button onclick="startDay()" style="background:var(--brand);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:800;font-size:13px;cursor:pointer;flex-shrink:0;">Start Day</button>'
+        + '</div>';
+    }
+    applyRoleVisibility();
+  }
+
+  /* ---- render: project check-in box ---- */
+  function renderJobCheckin() {
+    const box = document.getElementById('jobCheckinBox');
+    if (!box) return;
+    const pid = MoldDocsStore.getCurrentProjectId();
+    const seg = openSegment();
+    if (seg && seg.projectId === pid) {
+      box.innerHTML = '<div style="background:#065F46;color:#fff;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">'
+        + '<div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;opacity:.85;font-weight:700;">On this job</div>'
+        +   '<div style="font-size:14px;font-weight:800;margin-top:2px;">Since ' + fmtClock(seg.inTs) + '</div></div>'
+        + '<button onclick="jobCheckOut()" style="background:#fff;color:#065F46;border:none;border-radius:10px;padding:9px 13px;font-weight:800;font-size:13px;cursor:pointer;flex-shrink:0;">Check Out</button>'
+        + '</div>';
+    } else if (seg) {
+      box.innerHTML = '<div style="background:#FEF3C7;border:1px solid #FDE68A;color:#92400E;border-radius:14px;padding:12px 14px;font-size:12px;font-weight:600;">'
+        + 'You’re checked into another job — check out there first.</div>';
+    } else {
+      box.innerHTML = '<div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">'
+        + '<div style="font-size:13px;font-weight:800;">Not on this job</div>'
+        + '<button onclick="jobCheckIn()" style="background:var(--brand);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:800;font-size:13px;cursor:pointer;flex-shrink:0;">Check In</button>'
+        + '</div>';
+    }
+    applyRoleVisibility();
+  }
+
+  /* ---- render: timesheet ---- */
+  function renderTimesheet() {
+    const allShifts = shifts().slice().sort((a, b) => b.inTs - a.inTs);
+    const weekStart = new Date();
+    weekStart.setHours(0, 0, 0, 0);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    let weekMs = 0;
+
+    const dayRows = allShifts.map((s) => {
+      const end = s.outTs || Date.now();
+      const dur = end - s.inTs;
+      if (s.inTs >= weekStart.getTime()) weekMs += dur;
+      const dateLabel = new Date(s.inTs).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      const open = !s.outTs;
+      return '<div class="ts-row"><div>'
+        + '<div class="ts-date">' + dateLabel + (open ? ' · on the clock' : '') + '</div>'
+        + '<div class="ts-sub">' + fmtClock(s.inTs) + ' – ' + (open ? 'now' : fmtClock(s.outTs)) + '</div>'
+        + '</div><div class="ts-hrs">' + fmtDur(dur) + '</div></div>';
+    }).join('');
+
+    $set('tsWeekTotal', fmtDur(weekMs));
+    const dayList = document.getElementById('tsDayList');
+    if (dayList) dayList.innerHTML = dayRows || '<div class="photos-empty">No shifts logged yet.</div>';
+
+    const byJob = {};
+    segments().forEach((s) => {
+      const end = s.outTs || Date.now();
+      byJob[s.projectId] = (byJob[s.projectId] || 0) + (end - s.inTs);
+    });
+    const jobList = document.getElementById('tsJobList');
+    if (jobList) {
+      const keys = Object.keys(byJob);
+      jobList.innerHTML = keys.length
+        ? keys.map((pid) => {
+            const p = MoldDocsStore.getProject(pid);
+            return '<div class="ts-row"><div class="ts-date">' + escapeHtml(p ? p.client : 'Unknown job')
+              + '</div><div class="ts-hrs">' + fmtDur(byJob[pid]) + '</div></div>';
+          }).join('')
+        : '<div class="photos-empty">No job time logged yet.</div>';
+    }
+  }
+
+  /* ============================================================
+     RECEIPTS — snap a receipt, stamp date/GPS, assign to a job.
+     Stored in the photo store with kind:'receipt'.
+     ============================================================ */
+
+  function receiptCapture() {
+    const f = document.getElementById('receiptFile');
+    if (f) f.click();
+  }
+
+  function onReceiptFile(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    toast('Saving receipt…');
+    getLocation((gps) => {
+      const seg = openSegment();
+      const allocations = seg ? [{ projectId: seg.projectId, amount: 0 }] : [];
+      MoldDocsStore.addPhoto({ kind: 'receipt', blob: file, ts: Date.now(), gps: gps, total: 0, allocations: allocations })
+        .then(() => { renderReceipts(); toast('✓ Receipt saved'); });
+    });
+  }
+
+  function receipts(cb) {
+    MoldDocsStore.allPhotos().then((all) => cb(all.filter((p) => p.kind === 'receipt')));
+  }
+
+  function setReceiptTotal(id, value) {
+    const total = Number(value) || 0;
+    receipts((list) => {
+      const r = list.find((x) => x.id === id);
+      if (!r) return;
+      r.total = total;
+      if (r.allocations && r.allocations.length === 1) r.allocations[0].amount = total;
+      MoldDocsStore.addPhoto(r).then(() => renderReceipts());
+    });
+  }
+
+  function setReceiptJob(id, projectId) {
+    receipts((list) => {
+      const r = list.find((x) => x.id === id);
+      if (!r) return;
+      r.allocations = projectId ? [{ projectId: projectId, amount: r.total || 0 }] : [];
+      MoldDocsStore.addPhoto(r).then(() => renderReceipts());
+    });
+  }
+
+  function deleteReceipt(id) {
+    MoldDocsStore.deletePhoto(id).then(() => { renderReceipts(); toast('Receipt deleted'); });
+  }
+
+  function renderReceipts() {
+    const list = document.getElementById('receiptList');
+    if (!list) return;
+    receipts((items) => {
+      (renderReceipts._urls || []).forEach((u) => URL.revokeObjectURL(u));
+      renderReceipts._urls = [];
+      if (!items.length) {
+        list.innerHTML = '<div class="photos-empty"><div class="big">🧾</div>'
+          + 'No receipts yet.<br/>Tap “Add Receipt” after a supply run.</div>';
+        return;
+      }
+      items.sort((a, b) => b.ts - a.ts);
+      const projects = MoldDocsStore.getProjects();
+      list.innerHTML = items.map((r) => {
+        const url = URL.createObjectURL(r.blob);
+        renderReceipts._urls.push(url);
+        const assigned = (r.allocations && r.allocations[0]) ? r.allocations[0].projectId : '';
+        const opts = '<option value="">Unassigned</option>'
+          + projects.map((p) => '<option value="' + p.id + '"' + (assigned === p.id ? ' selected' : '') + '>'
+            + escapeHtml(p.client) + '</option>').join('');
+        const dateLabel = new Date(r.ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return '<div class="rc-row">'
+          + '<div class="rc-thumb" onclick="openReceiptImg(\'' + r.id + '\')" style="background-image:url(' + url + ')"></div>'
+          + '<div class="rc-body">'
+          +   '<div class="rc-date">' + dateLabel + '</div>'
+          +   '<div class="rc-line"><span>$</span><input type="number" inputmode="decimal" value="' + (r.total || '') + '" placeholder="0.00" onchange="setReceiptTotal(\'' + r.id + '\',this.value)" /></div>'
+          +   '<select onchange="setReceiptJob(\'' + r.id + '\',this.value)">' + opts + '</select>'
+          + '</div>'
+          + '<button class="rc-del" onclick="deleteReceipt(\'' + r.id + '\')">✕</button>'
+          + '</div>';
+      }).join('');
+    });
+  }
+
+  function openReceiptImg(id) {
+    receipts((items) => {
+      const r = items.find((x) => x.id === id);
+      if (!r) return;
+      const url = URL.createObjectURL(r.blob);
+      const host = document.querySelector('.phone-screen');
+      if (!host) return;
+      const ov = document.createElement('div');
+      ov.style.cssText = 'position:absolute;inset:0;background:rgba(8,12,20,.94);z-index:400;display:flex;flex-direction:column;';
+      ov.innerHTML = '<div style="flex:1;background:#000 center/contain no-repeat;background-image:url(' + url + ');"></div>'
+        + '<div style="padding:14px;"><button id="rcClose" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:13px;cursor:pointer;">Close</button></div>';
+      host.appendChild(ov);
+      ov.querySelector('#rcClose').onclick = () => { URL.revokeObjectURL(url); ov.remove(); };
+    });
+  }
+
+  /* receiptsForProject(pid, cb) -> total dollars allocated to a project */
+  function receiptsForProject(pid, cb) {
+    receipts((items) => {
+      let sum = 0;
+      items.forEach((r) => {
+        (r.allocations || []).forEach((a) => { if (a.projectId === pid) sum += Number(a.amount) || 0; });
+      });
+      cb(sum);
+    });
+  }
+
+  /* ============================================================
+     JOB COST / COGS — labor (timesheet) + materials (receipts) +
+     manual other costs, vs. the job price -> margin.
+     ============================================================ */
+
+  function jobLaborMs(pid) {
+    let ms = 0;
+    segments().forEach((s) => {
+      if (s.projectId === pid) ms += (s.outTs || Date.now()) - s.inTs;
+    });
+    return ms;
+  }
+
+  function costRow(label, value, sub) {
+    return '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;">'
+      + '<span style="font-size:13px;color:var(--text-2);">' + escapeHtml(label)
+      + (sub ? ' <span style="font-size:11px;color:var(--text-3);">' + escapeHtml(sub) + '</span>' : '')
+      + '</span><span style="font-size:13px;font-weight:700;">' + value + '</span></div>';
+  }
+
+  function renderJobCost() {
+    const box = document.getElementById('jobCostBox');
+    if (!box) return;
+    const pid = MoldDocsStore.getCurrentProjectId();
+    const p = pid ? MoldDocsStore.getProject(pid) : null;
+    if (!p) { box.innerHTML = ''; return; }
+    const rate = MoldDocsStore.getLaborRate();
+    const laborMs = jobLaborMs(pid);
+    const laborCost = (laborMs / 3600000) * rate;
+    const other = p.otherCosts || [];
+    const otherTotal = other.reduce((s, l) => s + (Number(l.amount) || 0), 0);
+    const money = (n) => '$' + (Number(n) || 0).toFixed(2);
+
+    receiptsForProject(pid, (matCost) => {
+      const totalCost = laborCost + matCost + otherTotal;
+      const price = Number(p.price) || 0;
+      const margin = price - totalCost;
+      const marginPct = price > 0 ? Math.round((margin / price) * 100) : 0;
+
+      let html = '<div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;">';
+      html += costRow('Labor', money(laborCost), fmtDur(laborMs) + ' × ' + money(rate) + '/hr');
+      html += costRow('Materials', money(matCost), 'from receipts');
+      other.forEach((l, i) => {
+        html += '<div style="display:flex;gap:6px;align-items:center;padding:5px 0;">'
+          + '<input value="' + escapeHtml(l.label || '') + '" placeholder="Equipment, disposal, sub…" onchange="updateOtherCost(' + i + ',\'label\',this.value)" style="flex:1;min-width:0;padding:6px 8px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;" />'
+          + '<span style="font-size:13px;font-weight:700;">$</span>'
+          + '<input type="number" inputmode="decimal" value="' + (l.amount || '') + '" onchange="updateOtherCost(' + i + ',\'amount\',this.value)" style="width:64px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;" />'
+          + '<button onclick="removeOtherCost(' + i + ')" style="border:none;background:none;color:var(--text-3);font-size:14px;cursor:pointer;">✕</button>'
+          + '</div>';
+      });
+      html += '<div style="text-align:center;margin:6px 0 10px;"><button onclick="addOtherCost()" style="border:1px dashed var(--border);background:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--brand);cursor:pointer;">+ Add other cost</button></div>';
+
+      html += '<div style="border-top:1px solid var(--border);padding-top:8px;">';
+      html += costRow('Total Cost', money(totalCost), '');
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">'
+        + '<span style="font-size:13px;color:var(--text-2);">Job Price</span>'
+        + '<span style="font-weight:700;">$<input type="number" inputmode="decimal" value="' + (p.price || '') + '" placeholder="0.00" onchange="setJobPrice(this.value)" style="width:88px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;text-align:right;" /></span>'
+        + '</div>';
+      const marginColor = margin >= 0 ? '#065F46' : '#B91C1C';
+      html += '<div style="display:flex;justify-content:space-between;padding:8px 0 2px;border-top:1px solid var(--border);margin-top:4px;">'
+        + '<span style="font-size:14px;font-weight:800;">Margin</span>'
+        + '<span style="font-size:14px;font-weight:800;color:' + marginColor + ';">' + money(margin)
+        + (price > 0 ? ' · ' + marginPct + '%' : '') + '</span></div>';
+      html += '</div></div>';
+      box.innerHTML = html;
+    });
+  }
+
+  function addOtherCost() {
+    const pid = MoldDocsStore.getCurrentProjectId();
+    const p = pid ? MoldDocsStore.getProject(pid) : null;
+    if (!p) return;
+    const other = p.otherCosts || [];
+    other.push({ label: '', amount: 0 });
+    MoldDocsStore.updateProject(pid, { otherCosts: other });
+    renderJobCost();
+  }
+
+  function updateOtherCost(i, field, value) {
+    const pid = MoldDocsStore.getCurrentProjectId();
+    const p = pid ? MoldDocsStore.getProject(pid) : null;
+    if (!p) return;
+    const other = p.otherCosts || [];
+    if (!other[i]) return;
+    other[i][field] = (field === 'amount') ? (Number(value) || 0) : value;
+    MoldDocsStore.updateProject(pid, { otherCosts: other });
+    renderJobCost();
+  }
+
+  function removeOtherCost(i) {
+    const pid = MoldDocsStore.getCurrentProjectId();
+    const p = pid ? MoldDocsStore.getProject(pid) : null;
+    if (!p) return;
+    const other = p.otherCosts || [];
+    other.splice(i, 1);
+    MoldDocsStore.updateProject(pid, { otherCosts: other });
+    renderJobCost();
+  }
+
+  function setJobPrice(value) {
+    const pid = MoldDocsStore.getCurrentProjectId();
+    if (pid) MoldDocsStore.updateProject(pid, { price: Number(value) || 0 });
+    renderJobCost();
+  }

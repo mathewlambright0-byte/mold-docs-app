@@ -188,6 +188,38 @@ const MoldDocsStore = (() => {
 
     kvSet(key, value) {
       lsSet('md_kv_' + key, value);
+    },
+
+    /* ===== Roles & feature access ===== */
+    /* Client-side gating for a staged rollout — not hard security.
+       Real enforcement arrives with a backend login (Supabase). */
+
+    getRole() {
+      return lsGet('md_role', 'technician');
+    },
+
+    setRole(role) {
+      lsSet('md_role', role);
+    },
+
+    // returns { feature: 'admin' | 'everyone', ... }
+    getFeatureAccess() {
+      const defaults = { checkin: 'admin', timesheet: 'admin', receipts: 'admin', jobcost: 'admin' };
+      return Object.assign({}, defaults, lsGet('md_feature_access', {}));
+    },
+
+    setFeatureLevel(feature, level) {
+      const all = lsGet('md_feature_access', {});
+      all[feature] = level;
+      lsSet('md_feature_access', all);
+    },
+
+    getLaborRate() {
+      return lsGet('md_labor_rate', 35);
+    },
+
+    setLaborRate(rate) {
+      lsSet('md_labor_rate', Number(rate) || 0);
     }
   };
 })();
