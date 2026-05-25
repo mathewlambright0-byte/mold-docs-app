@@ -850,64 +850,13 @@
         </div>
 
         <div class="screen-body">
-          <div class="cal-strip">
-            <div class="cal-day"><div class="dow">Mon</div><div class="num">11</div><div class="dot"></div></div>
-            <div class="cal-day"><div class="dow">Tue</div><div class="num">12</div><div class="dot"></div></div>
-            <div class="cal-day today"><div class="dow">Wed</div><div class="num">13</div><div class="dot"></div></div>
-            <div class="cal-day"><div class="dow">Thu</div><div class="num">14</div><div class="dot"></div></div>
-            <div class="cal-day"><div class="dow">Fri</div><div class="num">15</div><div class="dot"></div></div>
-            <div class="cal-day"><div class="dow">Sat</div><div class="num">16</div></div>
-            <div class="cal-day"><div class="dow">Sun</div><div class="num">17</div></div>
-          </div>
+          <div class="cal-strip" id="calStrip"></div>
 
           <div class="section-h">
-            <div class="title">Wednesday, May 13</div>
-            <a class="link">Today</a>
+            <div class="title" id="schedDate">Today</div>
           </div>
 
-          <div class="schedule-item" onclick="goto('project')">
-            <div class="time">9:00 — 12:00 AM</div>
-            <div class="title">Henderson Residence — Day 3</div>
-            <div class="sub">📍 1847 Oak Ridge Dr · 12 min drive</div>
-          </div>
-
-          <div class="schedule-item amber" onclick="goto('project')">
-            <div class="time">11:30 AM — Estimate</div>
-            <div class="title">Patel Property — Basement Inspection</div>
-            <div class="sub">📍 22 Birchwood Ln · 18 min drive</div>
-          </div>
-
-          <div class="schedule-item">
-            <div class="time">1:00 PM — Lunch & travel</div>
-            <div class="title">Break</div>
-            <div class="sub">90 min buffer</div>
-          </div>
-
-          <div class="schedule-item blue" onclick="goto('project')">
-            <div class="time">2:30 PM — 4:30 PM</div>
-            <div class="title">Riverbend Office Park — Walk-through</div>
-            <div class="sub">📍 3401 Riverbend Rd, Suite B</div>
-          </div>
-
-          <div class="schedule-item">
-            <div class="time">5:00 PM — Office</div>
-            <div class="title">Send daily client updates</div>
-            <div class="sub">5 jobs awaiting update</div>
-          </div>
-
-          <div class="section-h" style="margin-top:18px;">
-            <div class="title">Tomorrow, May 14</div>
-          </div>
-          <div class="schedule-item">
-            <div class="time">8:00 AM — 11:00 AM</div>
-            <div class="title">Henderson Residence — Day 4 (Drying)</div>
-            <div class="sub">📍 1847 Oak Ridge Dr</div>
-          </div>
-          <div class="schedule-item amber">
-            <div class="time">12:00 PM</div>
-            <div class="title">Patel Property — Begin Containment</div>
-            <div class="sub">📍 22 Birchwood Ln</div>
-          </div>
+          <div id="scheduleList"></div>
         </div>
 
         <div class="tabbar">

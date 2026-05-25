@@ -15,6 +15,7 @@
     if (name === 'admin') renderAdminScreen();
     if (name === 'timesheet') renderTimesheet();
     if (name === 'receipts') renderReceipts();
+    if (name === 'schedule') renderSchedule();
   }
   document.querySelectorAll('.legend button').forEach(b => {
     b.addEventListener('click', () => goto(b.dataset.go));
@@ -1493,4 +1494,56 @@
     const pid = MoldDocsStore.getCurrentProjectId();
     if (pid) MoldDocsStore.updateProject(pid, { price: Number(value) || 0 });
     renderJobCost();
+  }
+
+  /* ============================================================
+     SCHEDULE — real current-week strip + the app's own jobs
+     listed as appointments. Driven by local project data only.
+     ============================================================ */
+
+  function renderSchedule() {
+    const strip = document.getElementById('calStrip');
+    const now = new Date();
+    if (strip) {
+      const dows = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const monday = new Date(now);
+      monday.setHours(0, 0, 0, 0);
+      monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+      let html = '';
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const isToday = d.toDateString() === now.toDateString();
+        html += '<div class="cal-day' + (isToday ? ' today' : '') + '">'
+          + '<div class="dow">' + dows[i] + '</div>'
+          + '<div class="num">' + d.getDate() + '</div>'
+          + (isToday ? '<div class="dot"></div>' : '')
+          + '</div>';
+      }
+      strip.innerHTML = html;
+    }
+
+    const dateEl = document.getElementById('schedDate');
+    if (dateEl) {
+      dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+
+    const list = document.getElementById('scheduleList');
+    if (!list) return;
+    const projects = MoldDocsStore.getProjects().filter((p) => p.statusClass !== 'complete');
+    if (!projects.length) {
+      list.innerHTML = '<div class="photos-empty"><div class="big">📅</div>'
+        + 'No jobs scheduled.<br/>Tap the + above to add one.</div>';
+      return;
+    }
+    list.innerHTML = projects.map((p) => {
+      const cls = p.statusClass === 'urgent' ? ' amber'
+        : (p.statusClass === 'scheduled' ? ' blue' : '');
+      return '<div class="schedule-item' + cls + '" onclick="openProject(\'' + p.id + '\')">'
+        + '<div class="time">' + escapeHtml(p.time || p.dayInfo || p.type || 'Scheduled') + '</div>'
+        + '<div class="title">' + escapeHtml(p.client || 'Untitled job')
+        +   (p.type ? ' — ' + escapeHtml(p.type) : '') + '</div>'
+        + '<div class="sub">📍 ' + escapeHtml(p.address || 'No address') + '</div>'
+        + '</div>';
+    }).join('');
   }
