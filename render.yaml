@@ -1,0 +1,14 @@
+# Render Blueprint — Mold Docs field app (static PWA, no build step)
+# This documents the hosting config. You can also just set these in the
+# Render dashboard when creating the Static Site.
+services:
+  - type: web
+    name: mold-docs-app
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
+    headers:
+      # never cache the service worker itself, so app updates reach phones
+      - path: /service-worker.js
+        name: Cache-Control
+        value: no-cache

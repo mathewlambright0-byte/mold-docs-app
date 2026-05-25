@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>Mold Docs</title>
+<meta name="description" content="Mold Docs field app — projects, photos, schedules, and client updates for mold remediation jobs." />
+<meta name="theme-color" content="#0891B2" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" type="image/png" href="icon-192.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Mold Docs" />
+<meta name="mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="app-shell.css" />
+</head>
+<body>
+  <div class="phone">
+    <div class="phone-screen">
+
+      <!-- ===================== SPLASH ===================== -->
+      <div class="screen active" data-screen="splash">
+        <div class="splash">
+          <div class="logo-big">
+            <div class="glyph">
+              <img src="logo.png" alt="Mold Docs"
+                   onerror="this.style.display='none';this.parentNode.innerHTML='<span style=&quot;font-size:24px;font-weight:800;color:var(--brand);&quot;>MD</span>';" />
+            </div>
+            <div>
+              <h1>Mold Docs</h1>
+              <div class="tag">Inspection · Remediation · Reporting</div>
+            </div>
+          </div>
+
+          <div class="splash-hero-mascot">
+            <img src="logo.png" alt="Mold Docs mascot"
+                 onerror="this.outerHTML='<div class=\'fallback\'>MD</div>';" />
+          </div>
+
+          <div class="hero">
+            <h2>Document every job.<br/>From walk-through to clearance.</h2>
+            <p>GPS-stamped photos, real-time timelines, and instant client updates — all in one place.</p>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" onclick="goto('dashboard')">Sign in</button>
+            <button class="btn btn-secondary" onclick="goto('dashboard')">Continue as Technician</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== DASHBOARD ===================== -->
+      <div class="screen" data-screen="dashboard">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="right">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor"><rect x="0" y="6" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="6" rx="0.5"/><rect x="8" y="2" width="3" height="8" rx="0.5"/><rect x="12" y="0" width="3" height="10" rx="0.5"/></svg>
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><path d="M7 1.6c1.7 0 3.2.6 4.4 1.7l1.4-1.4C11.2.6 9.2 0 7 0 4.8 0 2.8.6 1.2 2L2.6 3.3C3.8 2.2 5.3 1.6 7 1.6zm0 3.2c.9 0 1.7.3 2.3.9l1.4-1.4C9.7 3.5 8.4 3 7 3s-2.7.5-3.7 1.3l1.4 1.4c.6-.5 1.4-.9 2.3-.9zM7 7c-.5 0-.9.4-.9.9s.4.9.9.9.9-.4.9-.9S7.5 7 7 7z"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/><rect x="20" y="3" width="1" height="4" rx="0.5" fill="currentColor"/></svg>
+          </div>
+        </div>
+
+        <div class="topbar">
+          <div class="brand-avatar" title="Mold Docs">
+            <img src="logo.png" alt="Mold Docs"
+                 onerror="this.outerHTML='MD';" />
+          </div>
+          <div class="greeting">
+            <div class="hello">Wednesday, May 13</div>
+            <div class="name">Hey Mathew 👋</div>
+          </div>
+          <div class="icon-btn" title="Notifications">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="badge">3</span>
+          </div>
+        </div>
+
+        <div class="screen-body">
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="label">Today</div>
+              <div class="value">4</div>
+              <div class="delta">2 in progress</div>
+            </div>
+            <div class="kpi">
+              <div class="icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div class="label">Active Jobs</div>
+              <div class="value">12</div>
+              <div class="delta">+3 this week</div>
+            </div>
+            <div class="kpi">
+              <div class="icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div class="label">Awaiting Update</div>
+              <div class="value">5</div>
+              <div class="delta warn">Send today</div>
+            </div>
+            <div class="kpi">
+              <div class="icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="label">Hours This Wk</div>
+              <div class="value">28<span style="font-size:14px;color:var(--text-3);">h</span></div>
+              <div class="delta">on track</div>
+            </div>
+          </div>
+
+          <div class="section-h">
+            <div class="title">Today's Jobs</div>
+            <a class="link" onclick="goto('schedule')">View schedule →</a>
+          </div>
+
+          <div id="jobList"></div>
+
+          <div class="section-h">
+            <div class="title">Recently Completed</div>
+            <a class="link">All →</a>
+          </div>
+
+          <div class="job-card">
+            <div class="row1">
+              <div>
+                <div class="client">Carter Family Home</div>
+                <div class="address">📍 78 Willowbrook Cir</div>
+              </div>
+              <span class="status-pill complete">Complete</span>
+            </div>
+            <div class="job-meta">
+              <span>✓ Cleared May 11</span>
+              <span class="divider"></span>
+              <span>📷 34 photos</span>
+              <span class="divider"></span>
+              <span>📄 Report sent</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabbar" data-tabbar>
+          <div class="tab active" data-tab="dashboard" onclick="goto('dashboard')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10"/></svg>
+            Home
+          </div>
+          <div class="tab" data-tab="schedule" onclick="goto('schedule')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Schedule
+          </div>
+          <div class="tab center" onclick="goto('camera')">
+            <div class="fab">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            Capture
+          </div>
+          <div class="tab" data-tab="map">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+            Map
+          </div>
+          <div class="tab" data-tab="more">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            More
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== PROJECT DETAIL ===================== -->
+      <div class="screen" data-screen="project">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="right">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor"><rect x="0" y="6" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="6" rx="0.5"/><rect x="8" y="2" width="3" height="8" rx="0.5"/><rect x="12" y="0" width="3" height="10" rx="0.5"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/><rect x="20" y="3" width="1" height="4" rx="0.5" fill="currentColor"/></svg>
+          </div>
+        </div>
+
+        <div class="detail-hero">
+          <div class="back" onclick="goto('dashboard')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </div>
+          <h2 id="pdName">Henderson Residence</h2>
+          <div class="addr" id="pdAddr">📍 1847 Oak Ridge Dr, Asheville, NC</div>
+          <div class="meta-row" id="pdMeta">
+            <span class="chip">In Progress</span>
+            <span class="chip">Day 3 of 5</span>
+            <span class="chip">65% Complete</span>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tabbtn active" onclick="setProjectTab(this,'overview')">Overview</div>
+          <div class="tabbtn" onclick="setProjectTab(this,'timeline')">Timeline</div>
+          <div class="tabbtn" onclick="setProjectTab(this,'photos')">Photos</div>
+          <div class="tabbtn" onclick="setProjectTab(this,'materials')">Materials</div>
+          <div class="tabbtn" onclick="setProjectTab(this,'client')">Client</div>
+        </div>
+
+        <div class="screen-body">
+          <!-- Overview -->
+          <div data-ptab="overview">
+            <div class="row-actions">
+              <button class="btn-mini primary" onclick="goto('camera')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                Add Photo
+              </button>
+              <button class="btn-mini" onclick="goto('sms')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Update Client
+              </button>
+            </div>
+
+            <div class="section-h">
+              <div class="title">Progress</div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;">
+              <div class="progress-row" style="margin-top:0;">
+                <div class="progress-bar" style="height:8px;"><div class="fill" id="pdProgressFill" style="width:65%"></div></div>
+                <span class="pct" id="pdProgressPct">65%</span>
+              </div>
+              <div id="pdProgressNote" style="font-size:12px;color:var(--text-2);margin-top:8px;line-height:1.5;">
+                Containment built · HEPA filtration installed · Remediation 65% complete. On track for clearance Friday.
+              </div>
+            </div>
+
+            <div class="section-h">
+              <div class="title">Details</div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:4px 14px;margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-2);">Type</span>
+                <span style="font-size:13px;font-weight:600;" id="pdType">Remediation</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-2);">Affected Area</span>
+                <span style="font-size:13px;font-weight:600;" id="pdArea">Master Bath + Adj. Closet</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-2);">Phone</span>
+                <span style="font-size:13px;font-weight:600;" id="pdPhone">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-2);">Started</span>
+                <span style="font-size:13px;font-weight:600;" id="pdStarted">Mon, May 11</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:12px 0;">
+                <span style="font-size:13px;color:var(--text-2);">Estimated Completion</span>
+                <span style="font-size:13px;font-weight:600;color:var(--accent);">Fri, May 15</span>
+              </div>
+            </div>
+
+            <div class="section-h">
+              <div class="title">Recent Photos</div>
+              <a class="link" onclick="setProjectTab(document.querySelectorAll('.tabbtn')[2],'photos')">See all →</a>
+            </div>
+            <div class="photo-grid" id="recentPhotoGrid" style="grid-template-columns:repeat(4,1fr);"></div>
+          </div>
+
+          <!-- Timeline -->
+          <div data-ptab="timeline" style="display:none;">
+            <!-- AI Assist: natural-language → timeline entries -->
+            <div class="ai-card">
+              <div class="ai-head">
+                <div class="ai-icon" title="Mold Docs assistant">
+                  <img src="logo.png" alt="Mold Docs AI"
+                       onerror="this.outerHTML='<svg width=&quot;16&quot; height=&quot;16&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;white&quot; stroke-width=&quot;2.2&quot;><path d=&quot;M12 2l1.6 4.6L18 8l-4.4 1.4L12 14l-1.6-4.6L6 8l4.4-1.4z&quot;/></svg>';" />
+                </div>
+                <div>
+                  <div class="ai-title">Ask the Doc</div>
+                  <div style="font-size:11px;color:var(--text-2);">Speak or type — I'll log the timeline</div>
+                </div>
+              </div>
+
+              <div class="ai-input-wrap">
+                <textarea id="aiInput" class="ai-input"
+                  placeholder="e.g. Today we did drywall, and tomorrow we need to mud and tape. Started antimicrobial treatment this afternoon."></textarea>
+                <button id="aiMic" class="ai-mic" onclick="toggleMic()" title="Voice input">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                </button>
+              </div>
+
+              <div class="ai-suggestions">
+                <div class="ai-chip" onclick="useSuggestion('Today we did drywall, and tomorrow we need to mud and tape.')">Drywall &amp; mud</div>
+                <div class="ai-chip" onclick="useSuggestion('Finished antimicrobial treatment today. Drying with dehumidifiers starts tomorrow morning.')">Treatment done</div>
+                <div class="ai-chip" onclick="useSuggestion('Cleared for re-entry. Final report to be sent Friday.')">Job complete</div>
+                <div class="ai-chip" onclick="useSuggestion('Demo wrapped up. Subfloor needs replaced tomorrow before sealing.')">Demo wrap</div>
+                <div class="ai-chip" onclick="useSuggestion('Moisture reading 84% in master bath. Containment going up this afternoon.')">Inspection</div>
+              </div>
+
+              <button id="aiGo" class="ai-go" onclick="aiParse()">
+                <svg id="aiGoIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Generate timeline entries
+              </button>
+            </div>
+
+            <!-- AI preview slot — populated after parsing -->
+            <div id="aiPreview"></div>
+
+            <div class="section-h"><div class="title">Project Timeline</div></div>
+            <div id="timelineList" class="timeline"></div>
+          </div>
+
+          <!-- Photos -->
+          <div data-ptab="photos" style="display:none;">
+            <div class="row-actions">
+              <button class="btn-mini primary" onclick="goto('camera')">
+                + Capture
+              </button>
+              <button class="btn-mini">
+                Filter by phase
+              </button>
+            </div>
+            <div id="photoGrid"></div>
+          </div>
+
+          <!-- Materials / Home Depot list (Spanish-first) -->
+          <div data-ptab="materials" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div class="lang-toggle">
+                <button class="active" onclick="setMatLang(this,'es')">Español</button>
+                <button onclick="setMatLang(this,'en')">English</button>
+              </div>
+              <div style="font-size:11px;color:var(--text-3);font-weight:600;" data-es="Lista de Home Depot" data-en="Home Depot list">Lista de Home Depot</div>
+            </div>
+
+            <!-- Voice input card -->
+            <div class="voice-card">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.85;position:relative;z-index:2;" data-es="Habla en español" data-en="Speak in English">Habla en español</div>
+              <button id="bigMic" class="big-mic" onclick="matMicToggle()">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+              <div class="voice-hint" data-es='"Necesitamos cinco pliegos de drywall…"' data-en='"We need five sheets of drywall…"'>"Necesitamos cinco pliegos de drywall…"</div>
+              <div class="voice-sub" data-es="Yo lo traduzco y armo la lista" data-en="I'll translate it and build the list">Yo lo traduzco y armo la lista</div>
+            </div>
+
+            <!-- AI translation result will appear here when mic finishes -->
+            <div id="voiceResult"></div>
+
+            <div class="section-h">
+              <div class="title" data-es="Agregar rápido" data-en="Quick add">Agregar rápido</div>
+              <a class="link" data-es="Ver todo →" data-en="See all →">Ver todo →</a>
+            </div>
+
+            <div class="catalog-grid">
+
+              <div class="cat-item" data-key="drywall" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- Drywall sheet, isometric -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="dw1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FAFAF9"/><stop offset="1" stop-color="#D6D3D1"/></linearGradient></defs>
+                    <polygon points="14,32 78,18 90,30 90,72 30,86 14,72" fill="url(#dw1)" stroke="#A8A29E" stroke-width="1.2"/>
+                    <polygon points="14,32 78,18 90,30 26,42" fill="#E7E5E4" stroke="#A8A29E" stroke-width="1"/>
+                    <polygon points="78,18 90,30 90,72 78,68" fill="#C8C5C2" stroke="#A8A29E" stroke-width="1"/>
+                    <text x="50" y="62" font-family="Arial" font-size="10" font-weight="700" fill="#57534E" text-anchor="middle">USG ½"</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Drywall ½"</div>
+                <div class="lab-en">Drywall ½" sheet</div>
+                <a href="https://www.homedepot.com/p/USG-Sheetrock-Brand-1-2-in-x-4-ft-x-8-ft-UltraLight-Drywall-14113411708/202530243" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="mud" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- 5-gal joint compound bucket: light cream/yellow with USG-style band -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22,30 L78,30 L74,82 L26,82 Z" fill="#FAF089" stroke="#A16207" stroke-width="1.5"/>
+                    <rect x="22" y="42" width="56" height="20" fill="#1E3A8A"/>
+                    <text x="50" y="56" font-family="Arial" font-size="9" font-weight="800" fill="white" text-anchor="middle">SHEETROCK</text>
+                    <ellipse cx="50" cy="30" rx="28" ry="5" fill="#FDE68A" stroke="#A16207" stroke-width="1.2"/>
+                    <path d="M20,30 Q50,18 80,30" fill="none" stroke="#525252" stroke-width="1.5"/>
+                  </svg>
+                </div>
+                <div class="lab-es">Mud (5-gal)</div>
+                <div class="lab-en">Joint compound</div>
+                <a href="https://www.homedepot.com/p/USG-Sheetrock-Brand-4-5-gal-All-Purpose-Ready-Mixed-Joint-Compound-380501/100321605" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="tape" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- Paper drywall tape roll -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="50" cy="50" rx="36" ry="34" fill="#F5F5F4" stroke="#A8A29E" stroke-width="1.5"/>
+                    <ellipse cx="50" cy="50" rx="28" ry="26" fill="#E7E5E4" stroke="#A8A29E" stroke-width="1"/>
+                    <ellipse cx="50" cy="50" rx="10" ry="9" fill="#FCD34D" stroke="#A16207" stroke-width="1"/>
+                    <line x1="14" y1="50" x2="86" y2="50" stroke="#D6D3D1" stroke-width="0.8" stroke-dasharray="2 3"/>
+                    <text x="50" y="86" font-family="Arial" font-size="7" font-weight="700" fill="#57534E" text-anchor="middle">250 FT</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Cinta drywall</div>
+                <div class="lab-en">Drywall tape</div>
+                <a href="https://www.homedepot.com/p/USG-Sheetrock-Brand-2-1-16-in-x-250-ft-Paper-Drywall-Joint-Tape-382175/100321613" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="plastic" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- 6 mil plastic sheeting roll -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="pl1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ECFEFF"/><stop offset="1" stop-color="#A5F3FC"/></linearGradient></defs>
+                    <rect x="14" y="22" width="72" height="56" rx="4" fill="url(#pl1)" stroke="#67E8F9" stroke-width="1.5"/>
+                    <ellipse cx="50" cy="22" rx="36" ry="6" fill="#67E8F9"/>
+                    <text x="50" y="56" font-family="Arial" font-size="11" font-weight="800" fill="#155E75" text-anchor="middle">6 MIL</text>
+                    <text x="50" y="70" font-family="Arial" font-size="7" font-weight="600" fill="#155E75" text-anchor="middle">10' × 100'</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Plástico 6mil</div>
+                <div class="lab-en">Plastic sheeting</div>
+                <a href="https://www.homedepot.com/p/Husky-10-ft-x-100-ft-6-mil-Clear-Plastic-Sheeting-CF0610C/206800024" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="duct" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- Gorilla duct tape: black roll with red band -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="50" cy="50" rx="36" ry="34" fill="#171717" stroke="#000" stroke-width="1.5"/>
+                    <rect x="14" y="40" width="72" height="20" fill="#DC2626"/>
+                    <text x="50" y="55" font-family="Arial" font-size="11" font-weight="800" fill="white" text-anchor="middle">GORILLA</text>
+                    <ellipse cx="50" cy="50" rx="10" ry="9" fill="#404040"/>
+                  </svg>
+                </div>
+                <div class="lab-es">Cinta adhesiva</div>
+                <div class="lab-en">Duct tape</div>
+                <a href="https://www.homedepot.com/p/Gorilla-1-7-8-in-x-35-yds-Heavy-Duty-Duct-Tape-60035/100550069" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="bags" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- Husky black contractor bags box -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="20,30 78,30 84,38 84,82 26,82 20,74" fill="#262626" stroke="#000" stroke-width="1.2"/>
+                    <polygon points="20,30 78,30 84,38 26,38" fill="#404040"/>
+                    <rect x="28" y="48" width="48" height="14" fill="#EAB308" rx="2"/>
+                    <text x="52" y="58" font-family="Arial" font-size="8" font-weight="900" fill="#262626" text-anchor="middle">HUSKY</text>
+                    <text x="52" y="74" font-family="Arial" font-size="6" font-weight="700" fill="white" text-anchor="middle">42 GAL · 32 ct</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Bolsas grandes</div>
+                <div class="lab-en">Contractor bags</div>
+                <a href="https://www.homedepot.com/p/Husky-42-Gal-Heavy-Duty-Clean-Up-Bags-32-Count-HK42WC032B/100063659" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="mask" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- 3M 8210 N95 white dome -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs><radialGradient id="m1" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="white"/><stop offset="1" stop-color="#D4D4D4"/></radialGradient></defs>
+                    <path d="M24,38 Q50,12 76,38 Q80,62 50,78 Q20,62 24,38 Z" fill="url(#m1)" stroke="#A8A29E" stroke-width="1.2"/>
+                    <ellipse cx="50" cy="34" rx="6" ry="3" fill="#737373"/>
+                    <path d="M22,32 Q14,22 18,16" stroke="#737373" stroke-width="1.5" fill="none"/>
+                    <path d="M78,32 Q86,22 82,16" stroke="#737373" stroke-width="1.5" fill="none"/>
+                    <path d="M22,58 Q14,68 18,76" stroke="#737373" stroke-width="1.5" fill="none"/>
+                    <path d="M78,58 Q86,68 82,76" stroke="#737373" stroke-width="1.5" fill="none"/>
+                    <text x="50" y="60" font-family="Arial" font-size="7" font-weight="800" fill="#404040" text-anchor="middle">3M N95</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Mascarillas N95</div>
+                <div class="lab-en">N95 respirators</div>
+                <a href="https://www.homedepot.com/p/3M-8210-N95-Drywall-Sanding-Disposable-Respirator-20-Pack-8210DB1-A/100321155" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="suit" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- White Tyvek coverall silhouette -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="20" r="9" fill="#FAFAFA" stroke="#A8A29E" stroke-width="1.2"/>
+                    <path d="M34,30 L50,28 L66,30 L72,52 L70,82 L30,82 L28,52 Z" fill="#FAFAFA" stroke="#A8A29E" stroke-width="1.2"/>
+                    <path d="M28,52 L18,68 M72,52 L82,68" stroke="#A8A29E" stroke-width="1.2" fill="none"/>
+                    <path d="M50,30 L50,82" stroke="#D4D4D4" stroke-width="0.8" stroke-dasharray="2 2"/>
+                    <text x="50" y="50" font-family="Arial" font-size="8" font-weight="900" fill="#1E3A8A" text-anchor="middle">TYVEK</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Trajes Tyvek</div>
+                <div class="lab-en">Tyvek suits</div>
+                <a href="https://www.homedepot.com/p/TRIMACO-DuPont-Tyvek-Large-No-Elastic-Disposable-Coverall-14122/203347773" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="gloves" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- Blue nitrile glove silhouette -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#60A5FA"/><stop offset="1" stop-color="#1D4ED8"/></linearGradient></defs>
+                    <path d="M36,18 L36,50 L30,52 L30,80 L70,80 L70,32 L66,30 L66,46 L62,46 L62,20 L58,18 L58,46 L54,46 L54,18 L50,16 L50,46 L46,46 L46,18 Z"
+                          fill="url(#g1)" stroke="#1E3A8A" stroke-width="1.2"/>
+                    <rect x="30" y="76" width="40" height="6" fill="#1E40AF"/>
+                  </svg>
+                </div>
+                <div class="lab-es">Guantes nitrilo</div>
+                <div class="lab-en">Nitrile gloves</div>
+                <a href="https://www.homedepot.com/p/GORILLA-GRIP-100-Count-4mil-Disposable-Nitrile-Work-Gloves-Large-22892-06/329486486" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="concrobium" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- Concrobium green & white jug -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="36" y="14" width="14" height="10" fill="#FAFAFA" stroke="#525252" stroke-width="1"/>
+                    <path d="M30,24 L70,24 L74,30 L74,84 L26,84 L26,30 Z" fill="#FAFAFA" stroke="#525252" stroke-width="1.2"/>
+                    <rect x="30" y="38" width="44" height="32" fill="#16A34A"/>
+                    <text x="52" y="52" font-family="Arial" font-size="9" font-weight="900" fill="white" text-anchor="middle">Concrobium</text>
+                    <text x="52" y="64" font-family="Arial" font-size="6" font-weight="700" fill="white" text-anchor="middle">MOLD CONTROL</text>
+                    <text x="52" y="78" font-family="Arial" font-size="7" font-weight="700" fill="#16A34A" text-anchor="middle">1 GAL</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Concrobium</div>
+                <div class="lab-en">Concrobium</div>
+                <a href="https://www.homedepot.com/p/Concrobium-1-gal-Mold-Control-Jug-025001/100654369" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="bucket" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- Iconic Home Depot orange 5-gallon Homer bucket -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="hb1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FB923C"/><stop offset=".5" stop-color="#F97316"/><stop offset="1" stop-color="#C2410C"/></linearGradient></defs>
+                    <path d="M22,30 L78,30 L72,84 L28,84 Z" fill="url(#hb1)" stroke="#9A3412" stroke-width="1.5"/>
+                    <ellipse cx="50" cy="30" rx="28" ry="5" fill="#FDBA74" stroke="#9A3412" stroke-width="1.2"/>
+                    <path d="M22,30 Q50,16 78,30" fill="none" stroke="#1F2937" stroke-width="2"/>
+                    <rect x="34" y="48" width="32" height="20" fill="white" stroke="#9A3412" stroke-width="0.8"/>
+                    <text x="50" y="60" font-family="Arial" font-size="9" font-weight="900" fill="#F97316" text-anchor="middle">HOMER</text>
+                    <text x="50" y="68" font-family="Arial" font-size="5" font-weight="700" fill="#F97316" text-anchor="middle">5 GAL</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Cubeta 5-gal</div>
+                <div class="lab-en">5-gal bucket</div>
+                <a href="https://www.homedepot.com/p/The-Home-Depot-5-Gallon-Orange-Homer-Bucket-05GLHD2/100087613" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+              <div class="cat-item" data-key="screws" onclick="bumpItem(this,1)">
+                <div class="qty-badge"></div>
+                <div class="swatch">
+                  <!-- Screws clustered -->
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="sc1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E5E5E5"/><stop offset="1" stop-color="#737373"/></linearGradient></defs>
+                    <!-- screw 1 -->
+                    <g transform="translate(28,20) rotate(15)">
+                      <ellipse cx="0" cy="0" rx="10" ry="4" fill="url(#sc1)" stroke="#404040" stroke-width="0.8"/>
+                      <path d="M-2,3 L-1,55 L1,55 L2,3 Z" fill="url(#sc1)" stroke="#404040" stroke-width="0.6"/>
+                      <line x1="-7" y1="0" x2="7" y2="0" stroke="#262626" stroke-width="1"/>
+                      <line x1="0" y1="-3" x2="0" y2="3" stroke="#262626" stroke-width="1"/>
+                    </g>
+                    <g transform="translate(58,16) rotate(-10)">
+                      <ellipse cx="0" cy="0" rx="10" ry="4" fill="url(#sc1)" stroke="#404040" stroke-width="0.8"/>
+                      <path d="M-2,3 L-1,60 L1,60 L2,3 Z" fill="url(#sc1)" stroke="#404040" stroke-width="0.6"/>
+                      <line x1="-7" y1="0" x2="7" y2="0" stroke="#262626" stroke-width="1"/>
+                      <line x1="0" y1="-3" x2="0" y2="3" stroke="#262626" stroke-width="1"/>
+                    </g>
+                    <text x="50" y="92" font-family="Arial" font-size="7" font-weight="700" fill="#57534E" text-anchor="middle">1-5/8" COARSE</text>
+                  </svg>
+                </div>
+                <div class="lab-es">Tornillos</div>
+                <div class="lab-en">Drywall screws</div>
+                <a href="https://www.homedepot.com/p/Grip-Rite-6-x-1-5-8-in-2-Phillips-Bugle-Head-Coarse-Thread-Drywall-Screw-1-lb-Box-158CDWS1/100112584" target="_blank" onclick="event.stopPropagation()" style="position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text-3);text-decoration:none;">↗</a>
+              </div>
+
+            </div>
+
+            <div class="section-h">
+              <div class="title" data-es="Tu lista" data-en="Your list">Tu lista <span id="listCount" style="color:var(--text-3);font-weight:500;font-size:13px;"></span></div>
+              <a class="link" onclick="clearList()" data-es="Borrar todo" data-en="Clear all">Borrar todo</a>
+            </div>
+
+            <div id="yourList" class="your-list">
+              <div style="text-align:center;color:var(--text-3);font-size:12px;padding:18px 8px;" data-es="Toca arriba para agregar materiales" data-en="Tap items above to add materials">
+                Toca arriba para agregar materiales
+              </div>
+            </div>
+
+            <div class="hd-card">
+              <div class="hd-logo">H</div>
+              <div class="hd-text">
+                <div class="hd-title">Home Depot · 4.2 mi</div>
+                <div class="hd-sub" data-es="250 Bleachery Blvd · Pro Desk abre hasta 6pm" data-en="250 Bleachery Blvd · Pro Desk open until 6pm">250 Bleachery Blvd · Pro Desk abre hasta 6pm</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+            <button class="send-list-btn" onclick="sendList()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span data-es="Enviar lista a Mathew" data-en="Send list to Mathew">Enviar lista a Mathew</span>
+            </button>
+            <div style="text-align:center;font-size:11px;color:var(--text-3);" data-es="Él recibirá la lista con fotos en su teléfono" data-en="He'll receive the list with photos on his phone">Él recibirá la lista con fotos en su teléfono</div>
+          </div>
+
+          <!-- Client -->
+          <div data-ptab="client" style="display:none;">
+            <div class="client-card">
+              <div class="row">
+                <div class="av">SH</div>
+                <div>
+                  <div class="who">Sarah Henderson</div>
+                  <div class="num">(828) 555-0142</div>
+                </div>
+              </div>
+              <div class="client-actions">
+                <button>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  Call
+                </button>
+                <button class="primary" onclick="goto('sms')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  Send Update
+                </button>
+              </div>
+            </div>
+
+            <div class="section-h">
+              <div class="title">Recent Messages Sent</div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;">
+              <div style="font-size:11px;color:var(--text-3);font-weight:600;">May 12 · 5:47 PM · Delivered</div>
+              <div style="font-size:13px;margin-top:4px;line-height:1.4;color:var(--text);">"Day 2 update — demo complete, subfloor replaced. 4 photos attached. On track for Friday clearance."</div>
+              <div style="font-size:11px;color:var(--brand);font-weight:600;margin-top:6px;">📷 4 photos</div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;">
+              <div style="font-size:11px;color:var(--text-3);font-weight:600;">May 11 · 6:12 PM · Delivered</div>
+              <div style="font-size:13px;margin-top:4px;line-height:1.4;color:var(--text);">"Day 1 update — containment built and demo started. Job is going smoothly. 3 photos attached."</div>
+              <div style="font-size:11px;color:var(--brand);font-weight:600;margin-top:6px;">📷 3 photos</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab" onclick="goto('dashboard')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10"/></svg>
+            Home
+          </div>
+          <div class="tab" onclick="goto('schedule')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Schedule
+          </div>
+          <div class="tab center" onclick="goto('camera')">
+            <div class="fab">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            Capture
+          </div>
+          <div class="tab">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+            Map
+          </div>
+          <div class="tab">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            More
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== CAMERA ===================== -->
+      <div class="screen" data-screen="camera">
+        <div class="camera-screen">
+          <div class="status-bar" style="color:white;position:relative;z-index:3;">
+            <span>9:41</span>
+            <div class="right">
+              <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor"><rect x="0" y="6" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="6" rx="0.5"/><rect x="8" y="2" width="3" height="8" rx="0.5"/><rect x="12" y="0" width="3" height="10" rx="0.5"/></svg>
+              <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+
+          <div class="camera-toolbar-top">
+            <div class="pill" onclick="goto('project')" style="cursor:pointer;">✕ Close</div>
+            <div class="pill" style="color:var(--brand-light);">📍 Henderson Residence</div>
+            <div class="pill">⚡ Flash</div>
+          </div>
+
+          <div class="camera-viewport">
+            <video id="camVideo" class="cam-feed" playsinline autoplay muted></video>
+            <div class="crosshair"></div>
+            <div class="gps-stamp" id="gpsStamp">
+              <b>GPS:</b> locating…<br/>
+              <b>When:</b> —<br/>
+              <b>Job:</b> Current job
+            </div>
+          </div>
+
+          <div class="camera-tag-row">
+            <div class="tag-pill" onclick="selectCamTag(this)">Before</div>
+            <div class="tag-pill" onclick="selectCamTag(this)">Containment</div>
+            <div class="tag-pill" onclick="selectCamTag(this)">Demo</div>
+            <div class="tag-pill active" onclick="selectCamTag(this)">Treatment</div>
+            <div class="tag-pill" onclick="selectCamTag(this)">Drying</div>
+            <div class="tag-pill" onclick="selectCamTag(this)">After</div>
+            <div class="tag-pill" onclick="selectCamTag(this)">Reading</div>
+          </div>
+
+          <div class="camera-controls">
+            <div class="side-btn" onclick="flipCamera()" title="Flip camera">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            </div>
+            <div class="shoot-btn" id="shootBtn" onclick="capturePhoto()"></div>
+            <div class="preview-btn" id="camPreview" onclick="openPhotosTab()"></div>
+          </div>
+
+          <input type="file" id="camFile" accept="image/*" capture="environment" style="display:none" onchange="onCamFile(event)" />
+          <canvas id="camCanvas" style="display:none"></canvas>
+        </div>
+      </div>
+
+      <!-- ===================== SCHEDULE ===================== -->
+      <div class="screen" data-screen="schedule">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="right">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor"><rect x="0" y="6" width="3" height="4" rx="0.5"/><rect x="4" y="4" width="3" height="6" rx="0.5"/><rect x="8" y="2" width="3" height="8" rx="0.5"/><rect x="12" y="0" width="3" height="10" rx="0.5"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+          </div>
+        </div>
+
+        <div class="topbar">
+          <div class="greeting" style="flex:1;">
+            <div class="hello">May 2026</div>
+            <div class="name">Schedule</div>
+          </div>
+          <div class="icon-btn" onclick="goto('newproject')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+
+        <div class="screen-body">
+          <div class="cal-strip">
+            <div class="cal-day"><div class="dow">Mon</div><div class="num">11</div><div class="dot"></div></div>
+            <div class="cal-day"><div class="dow">Tue</div><div class="num">12</div><div class="dot"></div></div>
+            <div class="cal-day today"><div class="dow">Wed</div><div class="num">13</div><div class="dot"></div></div>
+            <div class="cal-day"><div class="dow">Thu</div><div class="num">14</div><div class="dot"></div></div>
+            <div class="cal-day"><div class="dow">Fri</div><div class="num">15</div><div class="dot"></div></div>
+            <div class="cal-day"><div class="dow">Sat</div><div class="num">16</div></div>
+            <div class="cal-day"><div class="dow">Sun</div><div class="num">17</div></div>
+          </div>
+
+          <div class="section-h">
+            <div class="title">Wednesday, May 13</div>
+            <a class="link">Today</a>
+          </div>
+
+          <div class="schedule-item" onclick="goto('project')">
+            <div class="time">9:00 — 12:00 AM</div>
+            <div class="title">Henderson Residence — Day 3</div>
+            <div class="sub">📍 1847 Oak Ridge Dr · 12 min drive</div>
+          </div>
+
+          <div class="schedule-item amber" onclick="goto('project')">
+            <div class="time">11:30 AM — Estimate</div>
+            <div class="title">Patel Property — Basement Inspection</div>
+            <div class="sub">📍 22 Birchwood Ln · 18 min drive</div>
+          </div>
+
+          <div class="schedule-item">
+            <div class="time">1:00 PM — Lunch & travel</div>
+            <div class="title">Break</div>
+            <div class="sub">90 min buffer</div>
+          </div>
+
+          <div class="schedule-item blue" onclick="goto('project')">
+            <div class="time">2:30 PM — 4:30 PM</div>
+            <div class="title">Riverbend Office Park — Walk-through</div>
+            <div class="sub">📍 3401 Riverbend Rd, Suite B</div>
+          </div>
+
+          <div class="schedule-item">
+            <div class="time">5:00 PM — Office</div>
+            <div class="title">Send daily client updates</div>
+            <div class="sub">5 jobs awaiting update</div>
+          </div>
+
+          <div class="section-h" style="margin-top:18px;">
+            <div class="title">Tomorrow, May 14</div>
+          </div>
+          <div class="schedule-item">
+            <div class="time">8:00 AM — 11:00 AM</div>
+            <div class="title">Henderson Residence — Day 4 (Drying)</div>
+            <div class="sub">📍 1847 Oak Ridge Dr</div>
+          </div>
+          <div class="schedule-item amber">
+            <div class="time">12:00 PM</div>
+            <div class="title">Patel Property — Begin Containment</div>
+            <div class="sub">📍 22 Birchwood Ln</div>
+          </div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab" onclick="goto('dashboard')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10"/></svg>
+            Home
+          </div>
+          <div class="tab active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Schedule
+          </div>
+          <div class="tab center" onclick="goto('camera')">
+            <div class="fab">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            Capture
+          </div>
+          <div class="tab">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+            Map
+          </div>
+          <div class="tab">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            More
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== SMS CLIENT UPDATE ===================== -->
+      <div class="screen" data-screen="sms">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="right">
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+          </div>
+        </div>
+
+        <div class="topbar">
+          <div class="icon-btn" onclick="goto('project')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+          <div class="greeting" style="flex:1;">
+            <div class="hello">Henderson Residence</div>
+            <div class="name">Send Client Update</div>
+          </div>
+          <div style="width:40px;"></div>
+        </div>
+
+        <div class="screen-body">
+          <div class="form-field">
+            <label>Send To</label>
+            <input type="text" value="Sarah Henderson — (828) 555-0142" readonly style="background:var(--surface-2);" />
+          </div>
+
+          <div class="form-field">
+            <label>Quick Templates</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="tag-pill" style="background:var(--brand-light);color:var(--brand);border-color:var(--brand-light);">Day-end update</button>
+              <button class="tag-pill" style="background:var(--brand-light);color:var(--brand);border-color:var(--brand-light);">Milestone reached</button>
+              <button class="tag-pill" style="background:var(--brand-light);color:var(--brand);border-color:var(--brand-light);">On the way</button>
+              <button class="tag-pill" style="background:var(--brand-light);color:var(--brand);border-color:var(--brand-light);">Complete</button>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Message</label>
+            <textarea>Hi Sarah — Day 3 update from Mold Docs. Treatment phase wrapping up today. Drying tomorrow, then clearance test Friday morning. On track for completion. 3 photos attached.</textarea>
+          </div>
+
+          <div class="form-field">
+            <label>Attach Photos (3 selected)</label>
+            <div class="photo-chooser">
+              <div class="ph ph6 selected" style="background:linear-gradient(135deg,#10B981,#047857);"></div>
+              <div class="ph ph9 selected" style="background:linear-gradient(135deg,#22D3EE,#0E7490);"></div>
+              <div class="ph ph1 selected" style="background:linear-gradient(135deg,#94A3B8,#475569);"></div>
+              <div class="ph ph3" style="background:linear-gradient(135deg,#F97316,#EA580C);"></div>
+              <div class="ph ph5" style="background:linear-gradient(135deg,#64748B,#1E293B);"></div>
+              <div class="ph ph2" style="background:linear-gradient(135deg,#A78BFA,#6366F1);"></div>
+            </div>
+          </div>
+
+          <div class="section-h"><div class="title">Preview</div></div>
+          <div class="sms-preview">
+            <div class="sms-bubble">
+              Hi Sarah — Day 3 update from Mold Docs. Treatment phase wrapping up today. Drying tomorrow, then clearance test Friday morning. On track for completion. 3 photos attached.
+              <div class="meta">9:41 AM ✓✓</div>
+            </div>
+            <div class="sms-photos">
+              <div class="photo ph6"></div>
+              <div class="photo ph9"></div>
+              <div class="photo ph1"></div>
+              <div class="photo" style="background:rgba(15,118,110,.1);display:flex;align-items:center;justify-content:center;color:var(--brand);font-weight:700;font-size:12px;">+0 more</div>
+            </div>
+          </div>
+
+          <button class="btn btn-solid" onclick="alert('✅ Sent to Sarah Henderson — 3 photos attached. Logged to project timeline.'); goto('project');">
+            📩 Send via SMS
+          </button>
+          <div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:10px;">
+            Standard message rates apply. Photos sent as MMS.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== NEW PROJECT FORM ===================== -->
+      <div class="screen" data-screen="newproject">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="right">
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="19" height="9" rx="2" stroke="currentColor"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+          </div>
+        </div>
+
+        <div class="topbar">
+          <div class="icon-btn" onclick="goto('schedule')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+          <div class="greeting" style="flex:1;">
+            <div class="hello">Schedule</div>
+            <div class="name">New Job</div>
+          </div>
+          <div style="width:40px;"></div>
+        </div>
+
+        <div class="screen-body">
+
+          <!-- Housecall Pro shortcut -->
+          <div style="background:linear-gradient(135deg,#0F172A,#155E75);color:white;border-radius:14px;padding:14px;margin-bottom:14px;position:relative;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:white;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0F172A;font-size:11px;letter-spacing:.04em;">HCP</div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:700;">Import from Housecall Pro</div>
+                <div style="font-size:11px;opacity:.8;margin-top:1px;">Pull customer + job in one tap — no double entry</div>
+              </div>
+              <div style="background:rgba(132,204,22,.2);border:1px solid rgba(132,204,22,.5);color:#BEF264;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.04em;">CONNECTED</div>
+            </div>
+            <button onclick="openHCPImport()" style="margin-top:10px;width:100%;background:white;color:#0F172A;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Choose from Housecall Pro
+            </button>
+          </div>
+
+          <div style="text-align:center;font-size:11px;color:var(--text-3);margin:-4px 0 14px;font-weight:600;letter-spacing:.04em;">— OR ENTER MANUALLY —</div>
+
+          <div class="form-field">
+            <label>Job Type</label>
+            <select id="njType">
+              <option>Inspection</option>
+              <option selected>Remediation</option>
+              <option>Clearance Test</option>
+              <option>Re-inspection</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label>Client Name</label>
+            <input type="text" id="njName" placeholder="e.g. Sarah Henderson" />
+          </div>
+
+          <div class="form-field">
+            <label>Client Phone (for SMS updates)</label>
+            <input type="tel" id="njPhone" placeholder="(828) 555-0000" />
+          </div>
+
+          <div class="form-field">
+            <label>Property Address</label>
+            <input type="text" id="njAddress" placeholder="Search address…" />
+            <div style="margin-top:8px;height:120px;border-radius:12px;background:
+              linear-gradient(135deg,#DCFCE7,#A7F3D0),
+              repeating-linear-gradient(45deg,rgba(255,255,255,.4) 0 6px,transparent 6px 12px);
+              position:relative;border:1px solid var(--border);">
+              <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);color:var(--brand);">📍</div>
+              <div style="position:absolute;bottom:8px;left:10px;font-size:11px;color:var(--text-2);background:white;padding:4px 8px;border-radius:6px;">GPS will auto-populate</div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Affected Area</label>
+            <input type="text" id="njArea" placeholder="e.g. Master bath, basement, attic" />
+          </div>
+
+          <div class="form-field">
+            <label>Estimated Duration</label>
+            <select id="njDuration">
+              <option>Half day</option>
+              <option>1 day</option>
+              <option>2 days</option>
+              <option>3 days</option>
+              <option selected>4–5 days</option>
+              <option>1+ week</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label>Start Date</label>
+            <input type="text" id="njStart" value="Thu, May 14, 2026 — 9:00 AM" />
+          </div>
+
+          <div class="form-field">
+            <label>Notes</label>
+            <textarea id="njNotes" placeholder="Any details about the job, access instructions, etc."></textarea>
+          </div>
+
+          <button class="btn btn-solid" onclick="createJob()">Create Job</button>
+          <button class="btn btn-outline" style="margin-top:8px;" onclick="goto('schedule')">Cancel</button>
+        </div>
+      </div>
+
+    </div><!-- /phone-screen -->
+  </div><!-- /phone -->
+<script src="store.js"></script>
+<script src="app.js"></script>
+<script src="sw-register.js"></script>
+</body>
+</html>
