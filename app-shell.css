@@ -118,46 +118,35 @@ body {
 .ts-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 .ts-hrs { font-size: 14px; font-weight: 800; color: var(--brand); flex-shrink: 0; }
 
-/* Receipt rows */
+/* Receipt rows — capture + split across jobs */
 .rc-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 10px;
   margin-bottom: 8px;
 }
+.rc-top { display: flex; align-items: center; gap: 10px; }
 .rc-thumb {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 8px;
   background: #1E293B center/cover no-repeat;
   flex-shrink: 0;
   cursor: pointer;
 }
-.rc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.rc-headline { flex: 1; min-width: 0; }
 .rc-date { font-size: 11px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
-.rc-line { display: flex; align-items: center; gap: 4px; }
-.rc-line span { font-size: 14px; font-weight: 700; }
+.rc-line { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
+.rc-line span { font-size: 13px; font-weight: 700; }
 .rc-line input {
-  width: 90px;
+  width: 92px;
   padding: 6px 8px;
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 14px;
   font-family: inherit;
   font-weight: 700;
-}
-.rc-body select {
-  padding: 6px 8px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 12px;
-  font-family: inherit;
-  background: #fff;
-  max-width: 100%;
 }
 .rc-del {
   flex-shrink: 0;
@@ -170,3 +159,52 @@ body {
   font-size: 13px;
   cursor: pointer;
 }
+.rc-alloc { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.rc-alloc select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff;
+}
+.rc-alloc span { font-size: 13px; font-weight: 700; }
+.rc-alloc input {
+  width: 60px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
+.rc-alloc button {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  color: var(--text-3);
+  font-size: 13px;
+  cursor: pointer;
+}
+.rc-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+}
+.rc-add {
+  border: 1px dashed var(--border);
+  background: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand);
+  cursor: pointer;
+}
+.rc-bal { font-size: 11px; font-weight: 700; color: var(--text-3); flex-shrink: 0; }
+.rc-bal.ok { color: #065F46; }

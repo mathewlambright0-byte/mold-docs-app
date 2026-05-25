@@ -1207,7 +1207,7 @@
     toast('Saving receipt…');
     getLocation((gps) => {
       const seg = openSegment();
-      const allocations = seg ? [{ projectId: seg.projectId, amount: 0 }] : [];
+      const allocations = [{ projectId: seg ? seg.projectId : '', amount: 0 }];
       MoldDocsStore.addPhoto({ kind: 'receipt', blob: file, ts: Date.now(), gps: gps, total: 0, allocations: allocations })
         .then(() => { renderReceipts(); toast('✓ Receipt saved'); });
     });
@@ -1228,11 +1228,40 @@
     });
   }
 
-  function setReceiptJob(id, projectId) {
+  function addReceiptAlloc(id) {
     receipts((list) => {
       const r = list.find((x) => x.id === id);
       if (!r) return;
-      r.allocations = projectId ? [{ projectId: projectId, amount: r.total || 0 }] : [];
+      if (!r.allocations) r.allocations = [];
+      r.allocations.push({ projectId: '', amount: 0 });
+      MoldDocsStore.addPhoto(r).then(() => renderReceipts());
+    });
+  }
+
+  function setReceiptAllocJob(id, idx, projectId) {
+    receipts((list) => {
+      const r = list.find((x) => x.id === id);
+      if (!r || !r.allocations || !r.allocations[idx]) return;
+      r.allocations[idx].projectId = projectId;
+      MoldDocsStore.addPhoto(r).then(() => renderReceipts());
+    });
+  }
+
+  function setReceiptAllocAmount(id, idx, value) {
+    receipts((list) => {
+      const r = list.find((x) => x.id === id);
+      if (!r || !r.allocations || !r.allocations[idx]) return;
+      r.allocations[idx].amount = Number(value) || 0;
+      MoldDocsStore.addPhoto(r).then(() => renderReceipts());
+    });
+  }
+
+  function removeReceiptAlloc(id, idx) {
+    receipts((list) => {
+      const r = list.find((x) => x.id === id);
+      if (!r || !r.allocations) return;
+      r.allocations.splice(idx, 1);
+      if (!r.allocations.length) r.allocations.push({ projectId: '', amount: 0 });
       MoldDocsStore.addPhoto(r).then(() => renderReceipts());
     });
   }
@@ -1257,19 +1286,33 @@
       list.innerHTML = items.map((r) => {
         const url = URL.createObjectURL(r.blob);
         renderReceipts._urls.push(url);
-        const assigned = (r.allocations && r.allocations[0]) ? r.allocations[0].projectId : '';
-        const opts = '<option value="">Unassigned</option>'
-          + projects.map((p) => '<option value="' + p.id + '"' + (assigned === p.id ? ' selected' : '') + '>'
-            + escapeHtml(p.client) + '</option>').join('');
         const dateLabel = new Date(r.ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const allocs = (r.allocations && r.allocations.length) ? r.allocations : [{ projectId: '', amount: 0 }];
+        const total = Number(r.total) || 0;
+        const allocated = allocs.reduce((s, a) => s + (Number(a.amount) || 0), 0);
+        const allocRows = allocs.map((a, idx) => {
+          const opts = '<option value="">Choose job…</option>'
+            + projects.map((p) => '<option value="' + p.id + '"' + (a.projectId === p.id ? ' selected' : '') + '>'
+              + escapeHtml(p.client) + '</option>').join('');
+          return '<div class="rc-alloc">'
+            + '<select onchange="setReceiptAllocJob(\'' + r.id + '\',' + idx + ',this.value)">' + opts + '</select>'
+            + '<span>$</span><input type="number" inputmode="decimal" value="' + (a.amount || '') + '" placeholder="0" onchange="setReceiptAllocAmount(\'' + r.id + '\',' + idx + ',this.value)" />'
+            + '<button onclick="removeReceiptAlloc(\'' + r.id + '\',' + idx + ')" title="Remove">✕</button>'
+            + '</div>';
+        }).join('');
+        const balOk = total > 0 && Math.abs(total - allocated) < 0.005;
         return '<div class="rc-row">'
-          + '<div class="rc-thumb" onclick="openReceiptImg(\'' + r.id + '\')" style="background-image:url(' + url + ')"></div>'
-          + '<div class="rc-body">'
-          +   '<div class="rc-date">' + dateLabel + '</div>'
-          +   '<div class="rc-line"><span>$</span><input type="number" inputmode="decimal" value="' + (r.total || '') + '" placeholder="0.00" onchange="setReceiptTotal(\'' + r.id + '\',this.value)" /></div>'
-          +   '<select onchange="setReceiptJob(\'' + r.id + '\',this.value)">' + opts + '</select>'
+          + '<div class="rc-top">'
+          +   '<div class="rc-thumb" onclick="openReceiptImg(\'' + r.id + '\')" style="background-image:url(' + url + ')"></div>'
+          +   '<div class="rc-headline"><div class="rc-date">' + dateLabel + ' · receipt</div>'
+          +     '<div class="rc-line"><span>Total $</span><input type="number" inputmode="decimal" value="' + (r.total || '') + '" placeholder="0.00" onchange="setReceiptTotal(\'' + r.id + '\',this.value)" /></div></div>'
+          +   '<button class="rc-del" onclick="deleteReceipt(\'' + r.id + '\')">✕</button>'
           + '</div>'
-          + '<button class="rc-del" onclick="deleteReceipt(\'' + r.id + '\')">✕</button>'
+          + allocRows
+          + '<div class="rc-actions">'
+          +   '<button class="rc-add" onclick="addReceiptAlloc(\'' + r.id + '\')">+ Split to another job</button>'
+          +   '<span class="rc-bal ' + (balOk ? 'ok' : '') + '">$' + allocated.toFixed(2) + ' of $' + total.toFixed(2) + '</span>'
+          + '</div>'
           + '</div>';
       }).join('');
     });
