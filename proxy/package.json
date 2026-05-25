@@ -1,0 +1,13 @@
+{
+  "name": "mold-docs-ai-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Server-side proxy for the Mold Docs app — turns field notes into timeline entries via the Anthropic API. Holds the API key so it never reaches the browser.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
