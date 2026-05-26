@@ -413,36 +413,87 @@
     renderMatList();
   }
 
-  /* ---------- Housecall Pro mock import ---------- */
+  /* ---------- Housecall Pro — real import (admin-only, server-verified) ---------- */
   function openHCPImport() {
     const phone = document.querySelector('.phone-screen');
     if (!phone) return;
     const overlay = document.createElement('div');
     overlay.id = 'hcpOverlay';
     overlay.style.cssText = 'position:absolute;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-end;animation:fadein .15s ease;';
-    overlay.innerHTML = `
-      <div style="background:white;width:100%;border-radius:24px 24px 0 0;padding:18px;max-height:80%;overflow-y:auto;">
-        <div style="width:40px;height:4px;background:#CBD5E1;border-radius:999px;margin:0 auto 14px;"></div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:#0F172A;color:white;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;">HCP</div>
-          <div style="flex:1;">
-            <div style="font-size:14px;font-weight:800;">Housecall Pro</div>
-            <div style="font-size:11px;color:var(--text-3);">Showing 4 recent customers · synced 2 min ago</div>
-          </div>
-          <div style="background:#DCFCE7;color:#065F46;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;">LIVE</div>
-        </div>
-        <input type="text" placeholder="Search customers, addresses, job IDs…" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:12px;background:var(--surface-2);" />
-        <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Open Jobs</div>
-        ${hcpCustomerRow('Margaret Cole','912 Sunset Ridge Rd, Asheville','(828) 555-0193','Job #4421 · Inspection scheduled May 16','Margaret Cole','9128 Sunset Ridge')}
-        ${hcpCustomerRow('Tomas &amp; Aimee Vargas','58 Cedar Hollow Pkwy','(828) 555-0224','Job #4419 · Estimate sent','Tomas Vargas','58 Cedar Hollow Pkwy')}
-        ${hcpCustomerRow('Bluewater Property Mgmt','11 Bluewater Blvd, Unit 204','(828) 555-0177','Job #4415 · Awaiting approval','Bluewater Mgmt','11 Bluewater Blvd')}
-        <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 8px;">Recent Customers</div>
-        ${hcpCustomerRow('Henderson, Sarah','1847 Oak Ridge Dr','(828) 555-0142','3 prior jobs · last May 11','Sarah Henderson','1847 Oak Ridge Dr')}
-        <button onclick="closeHCP()" style="margin-top:14px;width:100%;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;">Cancel</button>
-        <div style="text-align:center;font-size:10px;color:var(--text-3);margin-top:12px;">Two-way sync · changes here update Housecall Pro</div>
-      </div>
-    `;
+    overlay.innerHTML = '<div style="background:white;width:100%;border-radius:24px 24px 0 0;padding:18px;max-height:80%;overflow-y:auto;">'
+      + '<div style="width:40px;height:4px;background:#CBD5E1;border-radius:999px;margin:0 auto 14px;"></div>'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'
+      +   '<div style="width:32px;height:32px;border-radius:8px;background:#0F172A;color:white;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;">HCP</div>'
+      +   '<div style="flex:1;">'
+      +     '<div style="font-size:14px;font-weight:800;">Housecall Pro</div>'
+      +     '<div style="font-size:11px;color:var(--text-3);" id="hcpStatus">Loading…</div>'
+      +   '</div>'
+      +   '<div style="background:#DCFCE7;color:#065F46;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;">LIVE</div>'
+      + '</div>'
+      + '<input type="text" id="hcpSearch" placeholder="Search customers…" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;margin-bottom:12px;background:var(--surface-2);box-sizing:border-box;" />'
+      + '<div id="hcpList"></div>'
+      + '<button onclick="closeHCP()" style="margin-top:14px;width:100%;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;">Cancel</button>'
+      + '</div>';
     phone.appendChild(overlay);
+    const search = document.getElementById('hcpSearch');
+    if (search) {
+      let t = null;
+      search.addEventListener('input', () => {
+        clearTimeout(t);
+        t = setTimeout(() => loadHCPCustomers(search.value), 400);
+      });
+    }
+    loadHCPCustomers('');
+  }
+
+  function loadHCPCustomers(q) {
+    const list = document.getElementById('hcpList');
+    const status = document.getElementById('hcpStatus');
+    if (!list) return;
+    if (status) status.textContent = 'Loading…';
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-3);font-size:12px;">Loading customers…</div>';
+
+    const finishUnauth = () => {
+      list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-2);font-size:13px;line-height:1.5;">Sign in as admin to load Housecall Pro customers.</div>';
+      if (status) status.textContent = 'Not signed in';
+    };
+
+    const c = initSupabase();
+    if (!c) { finishUnauth(); return; }
+    c.auth.getSession().then(({ data }) => {
+      if (!data || !data.session) { finishUnauth(); return; }
+      const token = data.session.access_token;
+      return fetch('https://mold-docs-ai-proxy.onrender.com/hcp/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ q: q || '', page: 1 })
+      }).then((r) => r.json().then((d) => ({ ok: r.ok, d: d })))
+        .then(({ ok, d }) => {
+          if (!ok) {
+            const msg = (d && d.error) ? d.error : 'Failed to load customers';
+            list.innerHTML = '<div style="padding:24px;text-align:center;color:#B91C1C;font-size:12px;">' + escapeHtml(msg) + '</div>';
+            if (status) status.textContent = 'Error';
+            return;
+          }
+          const customers = (d && d.customers) || [];
+          if (status) status.textContent = customers.length + ' customer' + (customers.length === 1 ? '' : 's');
+          if (!customers.length) {
+            list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-3);font-size:12px;">No customers found.</div>';
+            return;
+          }
+          list.innerHTML = customers.map((cu) => hcpCustomerRow(
+            cu.name || 'Unnamed',
+            cu.address || 'No address on file',
+            cu.phone || '',
+            cu.email || '',
+            cu.name || '',
+            cu.address || ''
+          )).join('');
+        });
+    }).catch(() => {
+      list.innerHTML = '<div style="padding:24px;text-align:center;color:#B91C1C;font-size:12px;">Network error</div>';
+      if (status) status.textContent = 'Error';
+    });
   }
   function hcpCustomerRow(name, addr, phone, sub, importName, importAddr) {
     return `

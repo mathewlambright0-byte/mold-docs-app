@@ -1,11 +1,17 @@
 /* ============================================================
    Mold Docs — Service Worker
-   Caches the app shell so the app loads instantly and works
-   offline (important for crews on job sites with poor signal).
-   Bump CACHE when you ship new files.
+   Caches the app shell so it loads instantly and works offline.
+
+   Strategy: stale-while-revalidate.
+     - Serve cached files instantly (fast + offline).
+     - In parallel, fetch fresh from the network and update the
+       cache. The next page load picks up the new version.
+   That means new code deploys reach phones on the visit AFTER
+   the one where the user first sees the change — no manual
+   cache-bump needed for each release.
    ============================================================ */
 
-const CACHE = 'molddocs-v6';
+const CACHE = 'molddocs-v7';
 
 const ASSETS = [
   './',
@@ -41,17 +47,26 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  // Only manage same-origin requests. Cross-origin (CDN, Anthropic, HCP,
+  // Supabase, etc.) goes straight to the network.
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+    caches.open(CACHE).then((cache) =>
+      cache.match(req).then((cached) => {
+        const networkFetch = fetch(req).then((response) => {
+          if (response && response.ok) {
+            cache.put(req, response.clone()).catch(() => {});
+          }
           return response;
-        })
-        .catch(() => caches.match('./index.html'));
-    })
+        }).catch(() => null);
+        // Serve cached immediately (stale) and let the network update the
+        // cache in the background. If nothing cached, wait for network.
+        return cached || networkFetch.then((r) => r || cache.match('./index.html'));
+      })
+    )
   );
 });
