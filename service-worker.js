@@ -5,7 +5,7 @@
    Bump CACHE when you ship new files.
    ============================================================ */
 
-const CACHE = 'molddocs-v5';
+const CACHE = 'molddocs-v6';
 
 const ASSETS = [
   './',
