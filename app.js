@@ -975,6 +975,7 @@
     renderPhotos();
     renderDayStatus();
     applyRoleVisibility();
+    checkSession();
   }
   initApp();
 
@@ -1057,7 +1058,7 @@
   }
 
   function switchRole() {
-    goto('splash');
+    signOut();
   }
 
   /* ============================================================
@@ -1617,4 +1618,92 @@
           });
       });
     });
+  }
+
+  /* ============================================================
+     ADMIN LOGIN — real authentication via Supabase.
+     The publishable key is safe in client code; sessions are
+     signed server-side. Not logged in = technician view, so the
+     app stays usable even if Supabase ever stumbles.
+     ============================================================ */
+
+  const SUPABASE_URL = 'https://rfryouolgkqhsmmezzts.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_xYBkhsXmX0uugMSXCj_XDQ_0jMQJIxg';
+  let supabaseClient = null;
+
+  function initSupabase() {
+    if (supabaseClient) return supabaseClient;
+    if (typeof supabase === 'undefined' || !supabase.createClient) return null;
+    try { supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {}
+    return supabaseClient;
+  }
+
+  function checkSession() {
+    const c = initSupabase();
+    if (!c) return;
+    c.auth.getSession().then(({ data }) => {
+      if (data && data.session) {
+        MoldDocsStore.setRole('admin');
+        applyRoleVisibility();
+      }
+    }).catch(() => {});
+  }
+
+  function openLogin() {
+    const ov = document.getElementById('loginOverlay');
+    if (ov) ov.style.display = 'flex';
+    const err = document.getElementById('loginErr');
+    if (err) err.textContent = '';
+    const emailEl = document.getElementById('loginEmail');
+    if (emailEl) setTimeout(() => emailEl.focus(), 50);
+  }
+
+  function closeLogin() {
+    const ov = document.getElementById('loginOverlay');
+    if (ov) ov.style.display = 'none';
+  }
+
+  function submitLogin() {
+    const emailEl = document.getElementById('loginEmail');
+    const passEl = document.getElementById('loginPass');
+    const err = document.getElementById('loginErr');
+    const email = ((emailEl && emailEl.value) || '').trim();
+    const pass = (passEl && passEl.value) || '';
+    if (!email || !pass) {
+      if (err) err.textContent = 'Enter your email and password.';
+      return;
+    }
+    const c = initSupabase();
+    if (!c) {
+      if (err) err.textContent = 'Auth is still loading — try again in a moment.';
+      return;
+    }
+    if (err) err.textContent = 'Signing in…';
+    c.auth.signInWithPassword({ email: email, password: pass }).then(({ data, error }) => {
+      if (error) {
+        if (err) err.textContent = (error.message || 'Sign-in failed').slice(0, 200);
+        return;
+      }
+      if (passEl) passEl.value = '';
+      closeLogin();
+      MoldDocsStore.setRole('admin');
+      applyRoleVisibility();
+      goto('dashboard');
+    }).catch(() => {
+      if (err) err.textContent = 'Sign-in error — try again.';
+    });
+  }
+
+  function signOut() {
+    const c = initSupabase();
+    const finish = () => {
+      MoldDocsStore.setRole('technician');
+      applyRoleVisibility();
+      goto('splash');
+    };
+    if (c) {
+      c.auth.signOut().then(finish).catch(finish);
+    } else {
+      finish();
+    }
   }

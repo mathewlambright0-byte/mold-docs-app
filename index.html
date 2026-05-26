@@ -45,7 +45,7 @@
           </div>
 
           <div class="actions">
-            <button class="btn btn-primary" onclick="enterAs('admin')">Sign in (Admin)</button>
+            <button class="btn btn-primary" onclick="openLogin()">Sign in (Admin)</button>
             <button class="btn btn-secondary" onclick="enterAs('technician')">Continue as Technician</button>
           </div>
         </div>
@@ -1065,9 +1065,25 @@
         </div>
       </div>
 
+    <!-- ===================== ADMIN LOGIN MODAL ===================== -->
+    <div id="loginOverlay" style="display:none;position:absolute;inset:0;background:rgba(8,12,20,.7);z-index:500;align-items:center;justify-content:center;padding:18px;">
+      <div style="background:#fff;border-radius:14px;padding:18px;width:100%;max-width:320px;box-shadow:0 16px 40px rgba(0,0,0,.4);">
+        <div style="font-weight:800;font-size:16px;margin-bottom:4px;">Admin sign in</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:14px;">Real password, server-verified.</div>
+        <input id="loginEmail" type="email" placeholder="Email" autocomplete="email" autocapitalize="off" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:8px;box-sizing:border-box;" />
+        <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:10px;box-sizing:border-box;" />
+        <div id="loginErr" style="color:#B91C1C;font-size:12px;margin-bottom:10px;min-height:14px;"></div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="closeLogin()" style="flex:1;padding:10px;background:#fff;border:1px solid var(--border);border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;">Cancel</button>
+          <button onclick="submitLogin()" style="flex:1;padding:10px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;">Sign in</button>
+        </div>
+      </div>
+    </div>
+
     </div><!-- /phone-screen -->
   </div><!-- /phone -->
 <script src="store.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 <script src="sw-register.js"></script>
 </body>
