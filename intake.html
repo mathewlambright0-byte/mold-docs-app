@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Mold Docs — Call Intake</title>
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-2: #2563eb;
+    --good: #22c55e;
+    --bad: #ef4444;
+    --warn: #f59e0b;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 24px 18px 96px; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  header img { width: 36px; height: 36px; border-radius: 8px; }
+  header .titles { line-height: 1.2; }
+  header h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+  header .sub { font-size: 12px; color: var(--muted); }
+  .signed { margin-left: auto; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .signed button { background: transparent; border: 1px solid var(--panel-2); color: var(--muted); padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+
+  .card { background: var(--panel); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 16px; }
+  .card h2 { margin: 0 0 10px; font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+  .card p.help { margin: 0 0 14px; font-size: 13px; color: var(--muted); }
+
+  label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
+  input[type=email], input[type=password], textarea {
+    width: 100%; background: #0b1220; color: var(--text); border: 1px solid var(--panel-2);
+    border-radius: 10px; padding: 12px 14px; font: inherit; resize: vertical;
+  }
+  textarea { min-height: 160px; line-height: 1.45; }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+
+  .btn { appearance: none; border: 0; cursor: pointer; font: inherit; padding: 14px 18px;
+    border-radius: 12px; font-weight: 600; letter-spacing: .01em; }
+  .btn-primary { background: var(--accent); color: white; width: 100%; font-size: 16px; }
+  .btn-primary:hover { background: var(--accent-2); }
+  .btn-primary[disabled] { opacity: .55; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--panel-2); }
+
+  /* mic */
+  .mic-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .mic { width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--panel-2);
+    color: var(--text); font-size: 22px; cursor: pointer; transition: background .15s;
+    display: flex; align-items: center; justify-content: center; }
+  .mic:hover { background: #475569; }
+  .mic.live { background: var(--bad); animation: pulse 1.2s ease-in-out infinite; }
+  .mic-hint { font-size: 13px; color: var(--muted); }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,.6);} 50% { box-shadow: 0 0 0 12px rgba(239,68,68,0);} }
+
+  .err { background: #2a0f12; border: 1px solid #7f1d1d; color: #fecaca; padding: 10px 12px; border-radius: 10px; font-size: 13px; }
+  .ok  { background: #0c2618; border: 1px solid #14532d; color: #bbf7d0; padding: 12px 14px; border-radius: 10px; font-size: 14px; }
+  .ok h3 { margin: 0 0 6px; font-size: 14px; color: #dcfce7; }
+  .ok .row { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; font-size: 13px; }
+  .ok .row span:first-child { color: #86efac; }
+  .ok a { color: #93c5fd; text-decoration: none; }
+  .ok a:hover { text-decoration: underline; }
+  .ok .links { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .ok .links a { padding: 6px 10px; border: 1px solid #14532d; border-radius: 8px; font-size: 12px; }
+
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -2px; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hidden { display: none !important; }
+
+  .examples { font-size: 12px; color: var(--muted); margin-top: 10px; padding: 10px 12px; border: 1px dashed var(--panel-2); border-radius: 10px; }
+  .examples b { color: #cbd5e1; }
+
+  footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 24px; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img src="logo.png" alt="">
+    <div class="titles">
+      <h1>Call Intake</h1>
+      <div class="sub">Phone lead → HCP customer + scheduled job</div>
+    </div>
+    <div id="signedBar" class="signed hidden">
+      <span id="signedAs"></span>
+      <button id="signOutBtn">Sign out</button>
+    </div>
+  </header>
+
+  <!-- LOGIN PANEL -->
+  <section id="loginPanel" class="card">
+    <h2>Sign in (admin)</h2>
+    <p class="help">Only admins can push records to Housecall Pro.</p>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" placeholder="you@molddocs.com">
+    <label for="pass">Password</label>
+    <input id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
+    <div id="loginErr" class="err hidden" style="margin-top:12px"></div>
+    <button id="loginBtn" class="btn btn-primary" style="margin-top:14px">Sign in</button>
+  </section>
+
+  <!-- INTAKE PANEL -->
+  <section id="intakePanel" class="card hidden">
+    <h2>Tell me about the lead</h2>
+    <p class="help">Free-form. Speak or type. Include name, phone, address, what they need, and when you want them on the schedule.</p>
+
+    <div class="mic-row">
+      <button id="micBtn" class="mic" title="Hold to dictate">🎙</button>
+      <div class="mic-hint">Tap mic to dictate. Tap again to stop.</div>
+    </div>
+
+    <textarea id="lead" placeholder="e.g. Jane Smith 503-555-1212 called from Google. Basement mold at 412 Oak St, Portland OR 97214. Wants me out Friday May 29 at 2pm for an inspection."></textarea>
+
+    <div id="err" class="err hidden" style="margin-top:10px"></div>
+
+    <button id="sendBtn" class="btn btn-primary" style="margin-top:14px">Send to HCP</button>
+
+    <div class="examples">
+      <b>Tips:</b> Year is optional (defaults to the next upcoming occurrence). Default appointment is 2 hours. If you don't include a time, the customer is created but no job is scheduled.
+    </div>
+  </section>
+
+  <!-- RESULT PANEL -->
+  <section id="resultPanel" class="card hidden">
+    <h2>Filed in Housecall Pro</h2>
+    <div id="resultBody" class="ok"></div>
+    <button id="resetBtn" class="btn btn-ghost" style="margin-top:12px; width:100%">File another lead</button>
+  </section>
+
+  <footer>
+    Mold Docs · <a href="./">Open app</a>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+'use strict';
+
+const SUPABASE_URL = 'https://rfryouolgkqhsmmezzts.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_xYBkhsXmX0uugMSXCj_XDQ_0jMQJIxg';
+const PROXY = 'https://mold-docs-ai-proxy.onrender.com';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true }
+});
+
+const $ = (id) => document.getElementById(id);
+
+/* ---------- view switching ---------- */
+function showLogin() {
+  $('loginPanel').classList.remove('hidden');
+  $('intakePanel').classList.add('hidden');
+  $('resultPanel').classList.add('hidden');
+  $('signedBar').classList.add('hidden');
+}
+function showIntake(email) {
+  $('loginPanel').classList.add('hidden');
+  $('intakePanel').classList.remove('hidden');
+  $('resultPanel').classList.add('hidden');
+  $('signedBar').classList.remove('hidden');
+  $('signedAs').textContent = email || '';
+}
+function showResult(html) {
+  $('intakePanel').classList.add('hidden');
+  $('resultPanel').classList.remove('hidden');
+  $('resultBody').innerHTML = html;
+}
+
+/* ---------- auth ---------- */
+async function checkSession() {
+  const { data } = await sb.auth.getSession();
+  const session = data && data.session;
+  if (session && session.user) {
+    showIntake(session.user.email);
+  } else {
+    showLogin();
+  }
+}
+
+$('loginBtn').addEventListener('click', async () => {
+  const email = $('email').value.trim();
+  const pass  = $('pass').value;
+  const err   = $('loginErr');
+  err.classList.add('hidden');
+  if (!email || !pass) { err.textContent = 'Enter email and password.'; err.classList.remove('hidden'); return; }
+  $('loginBtn').disabled = true;
+  $('loginBtn').innerHTML = '<span class="spinner"></span> Signing in…';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  $('loginBtn').disabled = false;
+  $('loginBtn').textContent = 'Sign in';
+  if (error) { err.textContent = error.message || 'Sign-in failed.'; err.classList.remove('hidden'); return; }
+  $('pass').value = '';
+  showIntake(data.user.email);
+});
+
+$('signOutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  showLogin();
+});
+
+/* ---------- voice dictation (Web Speech API) ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null;
+let dictating = false;
+
+function startDictation() {
+  if (!SR) { alert('Voice dictation isn’t supported in this browser. Use Chrome or Safari, or type the note.'); return; }
+  recog = new SR();
+  recog.lang = 'en-US';
+  recog.continuous = true;
+  recog.interimResults = true;
+  let finalText = $('lead').value;
+  if (finalText && !finalText.endsWith(' ') && !finalText.endsWith('\n')) finalText += ' ';
+  recog.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalText += t + ' ';
+      else interim += t;
+    }
+    $('lead').value = finalText + interim;
+  };
+  recog.onend = () => { if (dictating) recog.start(); };  // auto-resume until user stops
+  recog.onerror = (e) => { console.warn('SR error', e.error); };
+  dictating = true;
+  $('micBtn').classList.add('live');
+  recog.start();
+}
+function stopDictation() {
+  dictating = false;
+  $('micBtn').classList.remove('live');
+  if (recog) { try { recog.stop(); } catch(e) {} recog = null; }
+}
+$('micBtn').addEventListener('click', () => {
+  if (dictating) stopDictation(); else startDictation();
+});
+
+/* ---------- send to HCP ---------- */
+function fmtMoney(cents) {
+  return '$' + (Number(cents || 0) / 100).toFixed(2);
+}
+function fmtDateTime(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString('en-US', {
+      weekday: 'short', month: 'short', day: 'numeric',
+      hour: 'numeric', minute: '2-digit'
+    });
+  } catch (e) { return iso; }
+}
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, (c) => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+$('sendBtn').addEventListener('click', async () => {
+  const text = $('lead').value.trim();
+  const err = $('err');
+  err.classList.add('hidden');
+  if (!text) { err.textContent = 'Type or dictate a note first.'; err.classList.remove('hidden'); return; }
+
+  // Stop dictation if it's running.
+  if (dictating) stopDictation();
+
+  const { data: sessData } = await sb.auth.getSession();
+  const token = sessData && sessData.session && sessData.session.access_token;
+  if (!token) { err.textContent = 'Session expired — sign in again.'; err.classList.remove('hidden'); showLogin(); return; }
+
+  $('sendBtn').disabled = true;
+  $('sendBtn').innerHTML = '<span class="spinner"></span> Filing in HCP…';
+
+  let resp, data;
+  try {
+    resp = await fetch(PROXY + '/intake/process', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ text })
+    });
+    data = await resp.json().catch(() => ({}));
+  } catch (e) {
+    err.textContent = 'Network error reaching the proxy. Try again.';
+    err.classList.remove('hidden');
+    $('sendBtn').disabled = false;
+    $('sendBtn').textContent = 'Send to HCP';
+    return;
+  }
+
+  $('sendBtn').disabled = false;
+  $('sendBtn').textContent = 'Send to HCP';
+
+  if (!resp.ok || !data.ok) {
+    err.textContent = (data && data.error) ? data.error : ('Request failed (HTTP ' + resp.status + ').');
+    err.classList.remove('hidden');
+    return;
+  }
+
+  // Build the result card.
+  const c = (data.customer && data.customer.raw) || {};
+  const job = data.job || null;
+  const name = [c.first_name, c.last_name].filter(Boolean).join(' ') || '(no name)';
+  const phone = c.mobile_number || '';
+  const addr = (c.addresses && c.addresses[0]) || {};
+  const addrLine = [addr.street, addr.city, addr.state, addr.zip].filter(Boolean).join(', ');
+
+  let html = '<h3>✓ Customer created</h3>';
+  html += '<div class="row"><span>Name</span><span>' + escapeHtml(name) + '</span></div>';
+  if (phone)    html += '<div class="row"><span>Phone</span><span>' + escapeHtml(phone) + '</span></div>';
+  if (addrLine) html += '<div class="row"><span>Address</span><span>' + escapeHtml(addrLine) + '</span></div>';
+
+  if (job && job.id) {
+    html += '<h3 style="margin-top:14px">✓ Job scheduled</h3>';
+    html += '<div class="row"><span>When</span><span>' + escapeHtml(fmtDateTime((job.schedule && job.schedule.scheduled_start) || '')) + '</span></div>';
+    if (job.description) html += '<div class="row"><span>Work</span><span>' + escapeHtml(job.description) + '</span></div>';
+    if (job.invoice_number) html += '<div class="row"><span>Invoice #</span><span>' + escapeHtml(job.invoice_number) + '</span></div>';
+  } else {
+    html += '<div class="row" style="margin-top:8px"><span>Job</span><span>(no time given — schedule manually in HCP)</span></div>';
+  }
+
+  // Deep links.
+  const links = [];
+  if (data.customer && data.customer.id) {
+    links.push('<a href="https://pro.housecallpro.com/app/customers/' + encodeURIComponent(data.customer.id) + '" target="_blank">Open customer in HCP</a>');
+  }
+  if (job && job.id) {
+    links.push('<a href="https://pro.housecallpro.com/app/jobs/' + encodeURIComponent(job.id) + '" target="_blank">Open job in HCP</a>');
+  }
+  if (links.length) html += '<div class="links">' + links.join('') + '</div>';
+
+  showResult(html);
+});
+
+$('resetBtn').addEventListener('click', () => {
+  $('lead').value = '';
+  $('err').classList.add('hidden');
+  $('resultPanel').classList.add('hidden');
+  $('intakePanel').classList.remove('hidden');
+});
+
+/* ---------- boot ---------- */
+checkSession();
+sb.auth.onAuthStateChange((evt, session) => {
+  if (session && session.user) showIntake(session.user.email);
+  else showLogin();
+});
+</script>
+</body>
+</html>

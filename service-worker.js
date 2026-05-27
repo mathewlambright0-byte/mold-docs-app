@@ -11,11 +11,12 @@
    cache-bump needed for each release.
    ============================================================ */
 
-const CACHE = 'molddocs-v7';
+const CACHE = 'molddocs-v8';
 
 const ASSETS = [
   './',
   './index.html',
+  './intake.html',
   './styles.css',
   './app-shell.css',
   './store.js',
